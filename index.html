@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>N-FAITH LTD — FreightOps</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyD3eXk8TMdfLXbChckc1WeNeG1iyjgQvq8",
+  authDomain:"nfaith-freightops-f8ed4.firebaseapp.com",
+  databaseURL:"https://nfaith-freightops-f8ed4-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"nfaith-freightops-f8ed4",
+  storageBucket:"nfaith-freightops-f8ed4.firebasestorage.app",
+  messagingSenderId:"186676006291",
+  appId:"1:186676006291:web:e29d3876e614f0c182ec66"
+});
+const fbAuth = firebase.auth();
+</script>
 <style>
 :root{
   --bg:#f0f6fc;--surface:#fff;--s2:#e3eef9;--border:#b3d1ec;
@@ -1003,22 +1017,64 @@ let _syncTick = null;
 
 
 // ═══════════════════════════════════════════
-// STORAGE (localStorage only)
+// FIREBASE + LOCALSTORAGE STORAGE
 // ═══════════════════════════════════════════
-function save(){
+const FIREBASE_URL = 'https://nfaith-freightops-f8ed4-default-rtdb.europe-west1.firebasedatabase.app';
+let _lastHash = '';
+let _saveTimer = null;
+
+async function fbToken(){
   try{
-    localStorage.setItem('nf-db', JSON.stringify(db));
-    const dot = document.getElementById('sdot');
-    if(dot) dot.style.background = '#6ee7b7';
-  }catch(e){
-    const dot = document.getElementById('sdot');
-    if(dot) dot.style.background = '#fcd34d';
-  }
+    const u=fbAuth.currentUser;
+    return u ? await u.getIdToken() : null;
+  }catch(e){ return null; }
 }
+async function fbGet(path){
+  try{
+    const token=await fbToken();
+    const url=`${FIREBASE_URL}/${path}.json${token?'?auth='+token:''}`;
+    const r=await fetch(url);
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(e){ return null; }
+}
+async function fbSet(path, data){
+  try{
+    const token=await fbToken();
+    const url=`${FIREBASE_URL}/${path}.json${token?'?auth='+token:''}`;
+    const r=await fetch(url,{
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    return r.ok;
+  }catch(e){ return false; }
+}
+
+function setDot(state){
+  const dot=document.getElementById('sdot');
+  if(!dot) return;
+  dot.style.background = state==='ok'?'#6ee7b7': state==='warn'?'#fcd34d':'#f87171';
+  dot.title = state==='ok'?'Synced': state==='warn'?'Saving…':'Offline — saved locally';
+}
+
+function save(){
+  try{ localStorage.setItem('nf-db', JSON.stringify(db)); }catch(e){}
+  setDot('warn');
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(async()=>{
+    const ok = await fbSet('db', db);
+    setDot(ok?'ok':'err');
+    if(!ok) toast('⚠️ Saved locally — check connection','');
+  }, 600);
+}
+
 function saveUsers(){
   try{ localStorage.setItem('nf-users', JSON.stringify(users)); }catch(e){}
+  fbSet('users', users);
 }
+
 async function load(){
+  // 1. Load localStorage immediately so app feels instant
   try{
     const u = localStorage.getItem('nf-users');
     if(u) users = JSON.parse(u);
@@ -1026,11 +1082,54 @@ async function load(){
   ensureAdmin();
   try{
     const d = localStorage.getItem('nf-db');
-    if(d){ db = {...db, ...JSON.parse(d)}; }
+    if(d){ db={...db,...JSON.parse(d)}; _lastHash=d; }
   }catch(e){}
+
+  // 2. Pull latest from Firebase in background
+  try{
+    const [fbDb, fbUsers] = await Promise.all([fbGet('db'), fbGet('users')]);
+    if(fbUsers){
+      const ak='admin_at_nfaith_com'; const backup=users[ak];
+      users=fbUsers; if(!users[ak]) users[ak]=backup;
+      try{ localStorage.setItem('nf-users',JSON.stringify(users)); }catch(e){}
+    }
+    if(fbDb){
+      const h=JSON.stringify(fbDb);
+      if(h!==_lastHash){
+        db={...db,...fbDb}; _lastHash=h;
+        try{ localStorage.setItem('nf-db',h); }catch(e){}
+        if(me) render();
+      }
+    }
+    setDot('ok');
+  }catch(e){ setDot('err'); }
 }
+
 function startSync(){
-  // No remote sync — data is stored locally in this browser
+  if(_syncTick) clearInterval(_syncTick);
+  _syncTick = setInterval(async()=>{
+    try{
+      const [fbDb, fbUsers] = await Promise.all([fbGet('db'), fbGet('users')]);
+      if(fbUsers){
+        const ak='admin_at_nfaith_com'; const backup=users[ak];
+        const merged={...fbUsers}; if(!merged[ak]) merged[ak]=backup;
+        if(JSON.stringify(merged)!==JSON.stringify(users)){
+          users=merged;
+          try{ localStorage.setItem('nf-users',JSON.stringify(users)); }catch(e){}
+        }
+      }
+      if(fbDb){
+        const h=JSON.stringify(fbDb);
+        if(h!==_lastHash){
+          db={...db,...fbDb}; _lastHash=h;
+          try{ localStorage.setItem('nf-db',h); }catch(e){}
+          render();
+          toast('🔄 Updated from another device!');
+        }
+      }
+      setDot('ok');
+    }catch(e){ setDot('err'); }
+  }, 8000);
 }
 function ensureAdmin(){
   if(!users['admin_at_nfaith_com']){
@@ -1070,6 +1169,11 @@ async function doLoginPhone(){
   err.style.display='none';
   if(!phone||!pass){ err.textContent='Enter phone number and password.'; err.style.display='block'; return; }
 
+  try{
+    const fresh=await fbGet('users');
+    if(fresh){ const ak='admin_at_nfaith_com'; const bk=users[ak]; users=fresh; if(!users[ak]) users[ak]=bk; try{localStorage.setItem('nf-users',JSON.stringify(users));}catch(e){} }
+  }catch(e){}
+
   const found = Object.entries(users).find(([k,u])=>{
     const stored = (u.phone||'').replace(/[\s\-\(\)]/g,'');
     const entered = phone.replace(/[\s\-\(\)]/g,'');
@@ -1078,6 +1182,14 @@ async function doLoginPhone(){
   if(!found){ err.textContent='No account found for that phone number.'; err.style.display='block'; return; }
   const [key, u] = found;
   if(u.password!==pass){ err.textContent='Wrong password.'; err.style.display='block'; return; }
+  // Sign into Firebase Auth
+  try{
+    await fbAuth.signInWithEmailAndPassword(u.email||key.replace('_at_','@').replace(/_/g,'.'), pass);
+  }catch(fbErr){
+    if(fbErr.code==='auth/user-not-found'||fbErr.code==='auth/invalid-credential'){
+      try{ await fbAuth.createUserWithEmailAndPassword(u.email, pass); }catch(e2){}
+    }
+  }
   me={email:u.email||key, name:u.name, role:u.role, driverName:u.driverName||'', access:u.access||[], loginTime:Date.now()};
   try{localStorage.setItem(SESS,JSON.stringify(me));}catch(e){}
   logActivity('Logged in (phone)');
@@ -1092,10 +1204,23 @@ async function doLogin(){
   const btn=document.querySelector('#lpanel-email .lbtn');
   err.style.display='none';
   if(!email||!pass){err.textContent='Please enter email and password.';err.style.display='block';return;}
-
+  if(btn){btn.textContent='Checking…';btn.disabled=true;}
+  try{
+    const fresh=await fbGet('users');
+    if(fresh){ const ak='admin_at_nfaith_com'; const bk=users[ak]; users=fresh; if(!users[ak]) users[ak]=bk; try{localStorage.setItem('nf-users',JSON.stringify(users));}catch(e){} }
+  }catch(e){}
+  if(btn){btn.textContent='Sign In →';btn.disabled=false;}
   const u=users[eKey(email)];
   if(!u){err.textContent='No account found for: '+email+'. Ask your admin to check the account.';err.style.display='block';return;}
   if(u.password!==pass){err.textContent='Wrong password. Passwords are case-sensitive.';err.style.display='block';return;}
+  // Sign into Firebase Auth
+  try{
+    await fbAuth.signInWithEmailAndPassword(email, pass);
+  }catch(fbErr){
+    if(fbErr.code==='auth/user-not-found'||fbErr.code==='auth/invalid-credential'){
+      try{ await fbAuth.createUserWithEmailAndPassword(email, pass); }catch(e2){}
+    }
+  }
   me={email,name:u.name,role:u.role,driverName:u.driverName||'',access:u.access||[],loginTime:Date.now()};
   try{localStorage.setItem(SESS,JSON.stringify(me));}catch(e){}
   logActivity('Logged in');
@@ -1120,12 +1245,21 @@ async function doRegister(){
   if(!email||!email.includes('@')) return showErr(err,'Enter a valid email address.');
   if(!pass||pass.length<6) return showErr(err,'Password must be at least 6 characters.');
 
+  if(btn){btn.textContent='Checking…';btn.disabled=true;}
+  try{
+    const [freshDb,freshUsers]=await Promise.all([fbGet('db'),fbGet('users')]);
+    if(freshDb){ db={...db,...freshDb}; try{localStorage.setItem('nf-db',JSON.stringify(db));}catch(e){} }
+    if(freshUsers){ const ak='admin_at_nfaith_com'; const bk=users[ak]; users=freshUsers; if(!users[ak]) users[ak]=bk; try{localStorage.setItem('nf-users',JSON.stringify(users));}catch(e){} }
+  }catch(e){}
+  if(btn){btn.textContent='Create Account →';btn.disabled=false;}
+
   const validCode=(db.regCode||'NFAITH2024').trim().toUpperCase();
   if(code!==validCode) return showErr(err,'Invalid registration code. Ask your admin for the current code.');
   if(users[eKey(email)]) return showErr(err,'This email is already registered. Try signing in instead.');
 
-  // Create account
   users[eKey(email)]={email,name,password:pass,role,driverName:'',phone,access:[]};
+  // Create Firebase Auth account
+  try{ await fbAuth.createUserWithEmailAndPassword(email, pass); }catch(e){}
   saveUsers();
 
   suc.textContent='✅ Account created for '+name+'! Signing you in now…';
@@ -1144,6 +1278,7 @@ function doLogout(){
   logActivity('Logged out');
   me=null;
   try{localStorage.removeItem(SESS);}catch(e){}
+  try{ fbAuth.signOut(); }catch(e){}
   document.getElementById('app').style.display='none';
   document.getElementById('login-screen').style.display='flex';
 }
