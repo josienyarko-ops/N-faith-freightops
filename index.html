@@ -1142,35 +1142,33 @@ function saveUsers(){
 }
 
 async function load(){
-  // 1. Load localStorage immediately so app feels instant
+  // 1. Try localStorage for instant startup
   try{
     const u = localStorage.getItem('nf-users');
     if(u) users = JSON.parse(u);
   }catch(e){}
-  ensureAdmin();
   try{
     const d = localStorage.getItem('nf-db');
     if(d){ db={...db,...JSON.parse(d)}; _lastHash=d; }
   }catch(e){}
 
-  // 2. Pull latest from Firebase in background
+  // 2. Always pull latest from Firebase first — users live there
   try{
     const [fbDb, fbUsers] = await Promise.all([fbGet('db'), fbGet('users')]);
     if(fbUsers){
-      const ak='admin_at_nfaith_com'; const backup=users[ak];
-      users=fbUsers; if(!users[ak]) users[ak]=backup;
+      users = fbUsers;
       try{ localStorage.setItem('nf-users',JSON.stringify(users)); }catch(e){}
     }
     if(fbDb){
       const h=JSON.stringify(fbDb);
-      if(h!==_lastHash){
-        db={...db,...fbDb}; _lastHash=h;
-        try{ localStorage.setItem('nf-db',h); }catch(e){}
-        if(me) render();
-      }
+      db={...db,...fbDb}; _lastHash=h;
+      try{ localStorage.setItem('nf-db',h); }catch(e){}
     }
     setDot('ok');
   }catch(e){ setDot('err'); }
+
+  // 3. Only create admin if genuinely absent from BOTH localStorage and Firebase
+  ensureAdmin();
 }
 
 function startSync(){
@@ -1200,9 +1198,12 @@ function startSync(){
   }, 8000);
 }
 function ensureAdmin(){
+  // Only create the admin account if it is genuinely missing — never overwrite Firebase
   if(!users['admin_at_nfaith_com']){
     users['admin_at_nfaith_com'] = {email:'admin@nfaith.com',name:'Administrator',password:'admin123',role:'admin',driverName:''};
-    saveUsers();
+    // Only push to Firebase if we had to create it
+    try{ localStorage.setItem('nf-users',JSON.stringify(users)); }catch(e){}
+    fbSet('users', users);
   }
 }
 function eKey(email){ return email.toLowerCase().replace(/\./g,'_').replace(/@/g,'_at_'); }
@@ -3037,7 +3038,14 @@ function exportRevCSV(){
 // INIT
 // ═══════════════════════════════════════════
 (async()=>{
+  // Show loading state on login screen while Firebase loads
+  const lbtn = document.querySelector('#lpanel-email .lbtn');
+  if(lbtn){ lbtn.textContent='Loading…'; lbtn.disabled=true; }
+
   await load();
+
+  if(lbtn){ lbtn.textContent='Sign In →'; lbtn.disabled=false; }
+
   // Restore session after data loaded
   try{
     const saved = localStorage.getItem(SESS);
