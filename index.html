@@ -523,23 +523,115 @@ tbody tr:hover{background:var(--bg);}
 <!-- FUEL CALCULATOR -->
 <div class="section" id="sec-fuel-calculator">
   <div class="sechdr"><div class="sectitle">🧮 Fuel Calculator</div></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px;">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh);">
-      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">Trip Details</div>
-      <div class="fg" style="margin-bottom:10px;"><label>Select Trip (N-Faith WB)</label>
-        <select id="fc-trip" onchange="onFCTripChange()"><option value="">— Select trip —</option></select>
+  <div style="display:flex;flex-direction:column;gap:16px;max-width:860px;">
+
+    <!-- Fuel Efficiency Settings -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh);">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Fuel efficiency settings</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Consumption rate</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input id="fc-cons" type="number" step="0.01" value="0.65" oninput="calcFuel()" style="width:120px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:16px;font-family:var(--fb);outline:none;">
+            <span style="font-size:13px;color:var(--muted);">L / km</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;">Standard: 0.65 L/km · editable per fleet</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Efficiency (auto-calculated)</div>
+          <div style="font-size:32px;font-weight:700;color:var(--text);font-family:var(--fh);" id="fc-eff-display">1.54 km/L</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;" id="fc-eff-sub">1 ÷ 0.65 — how far per litre</div>
+        </div>
       </div>
-      <div class="fg" style="margin-bottom:10px;"><label>Distance (km)</label><input id="fc-dist" type="number" placeholder="0" oninput="calcFuel()"></div>
-      <div class="fg" style="margin-bottom:10px;"><label>Truck</label><input id="fc-truck" type="text" placeholder="Truck ID" readonly style="background:var(--bg);"></div>
-      <div class="fg" style="margin-bottom:10px;"><label>Price per Litre (GH₵)</label><input id="fc-ppl" type="number" step="0.01" placeholder="0.00" oninput="calcFuel()"></div>
-      <div class="fg" style="margin-bottom:10px;"><label>Actual Litres Used</label><input id="fc-actual" type="number" step="0.1" placeholder="0.0" oninput="calcFuel()"></div>
-      <div class="fg"><label>Station Name</label><input id="fc-station" type="text" placeholder="e.g. Total Accra"></div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh);">
-      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">Results</div>
-      <div id="fc-results" style="color:var(--muted);font-size:13px;">Fill in trip details to see calculations.</div>
-      <button class="btn bp" style="width:100%;margin-top:16px;" onclick="saveFuelFromCalc()">💾 Save to Fuel Log</button>
+
+    <!-- Expected Cost Calculator -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh);">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Expected cost calculator</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:16px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Trip distance (km)</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input id="fc-dist" type="number" placeholder="0" oninput="calcFuel()" style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:15px;font-family:var(--fb);outline:none;">
+            <span style="font-size:13px;color:var(--muted);">km</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;">Pulled from linked trip</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Price per litre (GHS)</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input id="fc-ppl" type="number" step="0.01" placeholder="0.00" oninput="calcFuel()" style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:15px;font-family:var(--fb);outline:none;">
+            <span style="font-size:13px;color:var(--muted);">GHS</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;">Entered at fill-up</div>
+        </div>
+      </div>
+
+      <!-- Formula display -->
+      <div id="fc-formula" style="display:none;background:var(--s2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;font-family:monospace;font-size:13px;color:var(--text2);line-height:1.9;"></div>
+
+      <!-- Result metric cards -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <div style="background:var(--bg);border-radius:8px;padding:14px 16px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Litres needed</div>
+          <div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--fh);" id="fc-litres">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">estimated</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:14px 16px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Expected cost</div>
+          <div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--fh);" id="fc-exp-cost">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">at current price</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:14px 16px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Cost per km</div>
+          <div style="font-size:24px;font-weight:700;color:var(--text);font-family:var(--fh);" id="fc-cpkm">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;">efficiency rate</div>
+        </div>
+      </div>
     </div>
+
+    <!-- Variance -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh);">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Variance — actual vs expected</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;margin-bottom:12px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Actual cost logged (GHS)</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input id="fc-actual-cost" type="number" step="0.01" placeholder="0.00" oninput="calcFuel()" style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:15px;font-family:var(--fb);outline:none;">
+            <span style="font-size:13px;color:var(--muted);">GHS</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Result</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:22px;font-weight:700;font-family:var(--fh);color:var(--text);" id="fc-variance-val">—</span>
+            <span id="fc-variance-badge" style="display:none;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;"></span>
+          </div>
+        </div>
+      </div>
+      <div id="fc-variance-note" style="display:none;border-radius:8px;padding:10px 14px;font-size:13px;"></div>
+    </div>
+
+    <!-- Trip details + save -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;box-shadow:var(--sh);">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Trip details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+        <div class="fg"><label>Select trip (N-Faith WB)</label>
+          <select id="fc-trip" onchange="onFCTripChange()"><option value="">— Select trip —</option></select>
+        </div>
+        <div class="fg"><label>Truck</label>
+          <input id="fc-truck" type="text" placeholder="Auto-filled" readonly style="background:var(--bg);">
+        </div>
+        <div class="fg"><label>Actual litres used</label>
+          <input id="fc-actual" type="number" step="0.1" placeholder="0.0" oninput="calcFuel()">
+        </div>
+        <div class="fg"><label>Station name</label>
+          <input id="fc-station" type="text" placeholder="e.g. Total Accra">
+        </div>
+      </div>
+      <button class="btn bp" style="width:100%;" onclick="saveFuelFromCalc()">💾 Save to Fuel Log</button>
+    </div>
+
   </div>
 </div>
 
@@ -1280,7 +1372,7 @@ function sb(status){
     'On Trip':'bg-t','Normal':'bg-b','Urgent':'bg-r','High':'bg-o',
     'Valid':'bg-g','Expiring Soon':'bg-o',
   };
-  return `<span class="badge ${m[status]||'bg-b'}">${status}</span>`;
+  return `<span class="badge ${m[status]||"bg-b"}">${status}</span>`;
 }
 function fmtGHC(n){ return 'GH₵'+Number(n||0).toLocaleString(); }
 function closeModal(t){ document.getElementById('modal-'+t)?.classList.remove('open'); }
@@ -1324,6 +1416,18 @@ function showTab(tab){
   if(nav) nav.classList.add('active');
   if(tab==='users') renderUsers();
   if(tab==='messages') renderMessages();
+  if(tab==='fuel-calculator'){
+    // Restore saved consumption rate from db
+    const consEl=document.getElementById('fc-cons');
+    if(consEl&&db.fuelConsumption){ consEl.value=db.fuelConsumption; }
+    // Pre-fill last known price per litre from most recent fuel entry
+    const pplEl=document.getElementById('fc-ppl');
+    if(pplEl&&!pplEl.value){
+      const lastFuel=(db.fuel||[]).filter(f=>f.type==='Fuel Refill'&&f.pricePerLitre).slice(-1)[0];
+      if(lastFuel) pplEl.value=lastFuel.pricePerLitre;
+    }
+    calcFuel();
+  }
 }
 function mobNav(tab){
   showTab(tab);
@@ -1920,31 +2024,113 @@ function changePassword(){
 // ═══════════════════════════════════════════
 function onFCTripChange(){
   const wb=document.getElementById('fc-trip').value;
-  const trip=db.trips.find(t=>t.waybill===wb);
+  const trip=(db.trips||[]).find(t=>t.waybill===wb);
   if(trip){
-    document.getElementById('fc-dist').value=trip.dist||'';
+    if(trip.dist) document.getElementById('fc-dist').value=trip.dist;
     document.getElementById('fc-truck').value=trip.truck||'';
+    // Pull last known price per litre for this truck from fuel log
+    const lastFuel=(db.fuel||[]).filter(f=>f.truck===trip.truck&&f.type==='Fuel Refill'&&f.pricePerLitre).slice(-1)[0];
+    if(lastFuel&&!document.getElementById('fc-ppl').value){
+      document.getElementById('fc-ppl').value=lastFuel.pricePerLitre;
+    }
   }
   calcFuel();
 }
+
 function calcFuel(){
-  const dist=parseFloat(document.getElementById('fc-dist').value)||0;
-  const ppl=parseFloat(document.getElementById('fc-ppl').value)||0;
-  const actual=parseFloat(document.getElementById('fc-actual').value)||0;
-  const eff=db.fuelEfficiency||1.54;
-  const cons=1/eff;
-  const expected=parseFloat((dist*cons).toFixed(1));
-  const expectedCost=parseFloat((expected*ppl).toFixed(2));
-  const actualCost=parseFloat((actual*ppl).toFixed(2));
-  const variance=expected>0?((actual-expected)/expected*100):0;
-  const vColor=Math.abs(variance)<10?'var(--green)':Math.abs(variance)<20?'var(--orange)':'var(--red)';
-  document.getElementById('fc-results').innerHTML=`
-    <div style="display:grid;gap:8px;">
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Expected consumption</span><strong>${expected} L</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Expected cost</span><strong>${fmtGHC(expectedCost)}</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Actual cost</span><strong>${fmtGHC(actualCost)}</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>Variance</span><strong style="color:${vColor}">${variance>0?'+':''}${variance.toFixed(1)}%</strong></div>
-    </div>`;
+  // Load saved efficiency from db if not manually set
+  const consEl=document.getElementById('fc-cons');
+  if(consEl&&!consEl._touched&&db.fuelConsumption) consEl.value=db.fuelConsumption;
+  if(consEl&&!consEl.dataset.wired){
+    consEl.dataset.wired='1';
+    consEl.addEventListener('input',()=>{ consEl._touched=true; });
+  }
+
+  const cons = parseFloat(document.getElementById('fc-cons')?.value)||0.65;
+  const dist = parseFloat(document.getElementById('fc-dist').value)||0;
+  const ppl  = parseFloat(document.getElementById('fc-ppl').value)||0;
+  const actualLitres = parseFloat(document.getElementById('fc-actual')?.value)||0;
+
+  // Auto-fill actual cost from litres × price
+  const autoActualCost = actualLitres&&ppl ? parseFloat((actualLitres*ppl).toFixed(2)) : 0;
+  const actualCostEl = document.getElementById('fc-actual-cost');
+  if(actualCostEl&&!actualCostEl._manuallyEdited&&autoActualCost){
+    actualCostEl.value = autoActualCost;
+    if(!actualCostEl.dataset.wired){
+      actualCostEl.dataset.wired='1';
+      actualCostEl.addEventListener('input',()=>{ actualCostEl._manuallyEdited=true; });
+    }
+  }
+  const actualCost = parseFloat(actualCostEl?.value)||0;
+
+  // Efficiency display
+  const eff = cons>0?(1/cons):0;
+  const effEl=document.getElementById('fc-eff-display');
+  const effSub=document.getElementById('fc-eff-sub');
+  if(effEl) effEl.textContent=eff.toFixed(2)+' km/L';
+  if(effSub) effSub.textContent=`1 ÷ ${cons.toFixed(2)} — how far per litre`;
+
+  // Persist consumption rate to db so it survives reload
+  db.fuelConsumption = cons;
+  db.fuelEfficiency  = eff;
+
+  if(!dist||!ppl) return;
+
+  const litresNeeded = parseFloat((dist*cons).toFixed(1));
+  const expectedCost = parseFloat((litresNeeded*ppl).toFixed(2));
+  const costPerKm    = parseFloat((cons*ppl).toFixed(2));
+
+  // Formula line
+  const fEl=document.getElementById('fc-formula');
+  if(fEl){
+    fEl.style.display='block';
+    fEl.innerHTML=`${dist} × ${cons.toFixed(2)} = <strong style="color:var(--text)">${litresNeeded} litres needed</strong><br>${litresNeeded} × GHS ${ppl.toFixed(2)} = <strong style="color:var(--accent)">GHS ${expectedCost.toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2})}</strong>`;
+  }
+
+  // Cards
+  const setEl=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  setEl('fc-litres', litresNeeded);
+  setEl('fc-exp-cost', 'GHS '+Math.round(expectedCost).toLocaleString());
+  setEl('fc-cpkm', 'GHS '+costPerKm.toFixed(2));
+
+  // Variance
+  const vNote=document.getElementById('fc-variance-note');
+  const vVal=document.getElementById('fc-variance-val');
+  const vBadge=document.getElementById('fc-variance-badge');
+  if(actualCost>0&&expectedCost>0){
+    const diff=parseFloat((actualCost-expectedCost).toFixed(2));
+    const pct=parseFloat(((diff/expectedCost)*100).toFixed(1));
+    const absPct=Math.abs(pct);
+    const over=diff>0;
+    const sign=over?'+':'';
+
+    let valColor=over?'var(--red)':'var(--green)';
+    if(absPct<=5) valColor='var(--green)';
+    let badgeCls='bg-g', badgeText='within range';
+    let noteBg=over?'var(--rbg)':'var(--gbg)', noteColor=over?'var(--red)':'var(--green)';
+    let noteText='Within expected range — good fuel discipline.';
+
+    if(absPct>5&&absPct<=15&&over){
+      badgeCls='bg-o'; badgeText=sign+absPct.toFixed(1)+'% over';
+      noteBg='var(--obg)'; noteColor='var(--orange)';
+      noteText='Spent GHS '+Math.abs(diff).toFixed(0)+' more than expected — check fill quantity or station price.';
+    } else if(absPct>15&&over){
+      badgeCls='bg-r'; badgeText=sign+absPct.toFixed(1)+'% over';
+      noteBg='var(--rbg)'; noteColor='var(--red)';
+      noteText='Significantly over budget by GHS '+Math.abs(diff).toFixed(0)+'. Investigate possible overfill, leakage or wrong price logged.';
+    } else if(!over&&absPct>5){
+      badgeCls='bg-g'; badgeText=absPct.toFixed(1)+'% under';
+      noteText='Under budget by GHS '+Math.abs(diff).toFixed(0)+'. Possibly a partial fill — verify tank was filled to full.';
+    }
+
+    if(vVal){ vVal.textContent=sign+'GHS '+Math.abs(diff).toFixed(0); vVal.style.color=valColor; }
+    if(vBadge){ vBadge.style.display='inline-block'; vBadge.className='badge '+badgeCls; vBadge.textContent=badgeText; }
+    if(vNote){ vNote.style.display='block'; vNote.style.background=noteBg; vNote.style.color=noteColor; vNote.textContent=noteText; }
+  } else {
+    if(vVal){ vVal.textContent='—'; vVal.style.color='var(--muted)'; }
+    if(vBadge) vBadge.style.display='none';
+    if(vNote) vNote.style.display='none';
+  }
 }
 function saveFuelFromCalc(){
   const wb=document.getElementById('fc-trip').value;
@@ -2828,12 +3014,22 @@ function renderUsers(){
 // EXPORT
 // ═══════════════════════════════════════════
 function exportRevCSV(){
-  const rows=[['N-Faith WB','Co. WB No.','Date','Driver','Client','Cargo','Qty','Unit Price','Revenue','Status']];
-  (db.trips||[]).forEach(t=>rows.push([t.waybill,t.companyWaybill||'',t.date,t.driver,t.client||'',t.cargo,t.qty||'',t.unitPrice||'',t.revenue||0,t.status]));
-  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a=document.createElement('a');
+  var hdrs=['N-Faith WB','Co. WB No.','Date','Driver','Client','Cargo','Qty','Unit Price','Revenue','Status'];
+  var rows=[hdrs];
+  (db.trips||[]).forEach(function(t){
+    rows.push([t.waybill,t.companyWaybill||'',t.date,t.driver,t.client||'',t.cargo,t.qty||'',t.unitPrice||'',t.revenue||0,t.status]);
+  });
+  var q=String.fromCharCode(34);
+  var csv=rows.map(function(r){
+    return r.map(function(v){
+      var s=String(v).replace(new RegExp(q,'g'),q+q);
+      return q+s+q;
+    }).join(',');
+  }).join(String.fromCharCode(13,10));
+  var a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='nfaith-revenue-'+new Date().toISOString().split('T')[0]+'.csv';
+  var d=new Date().toISOString();
+  a.download='nfaith-revenue-'+d.slice(0,10)+'.csv';
   a.click();
 }
 
