@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N-FAITH LTD — FreightOps</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f6fc;--surface:#fff;--s2:#e3eef9;--border:#b3d1ec;
+  --accent:#1558a8;--accent2:#1d72d1;--aglow:rgba(21,88,168,.12);
+  --green:#0b7a52;--gbg:#d2f0e4;--red:#b52b1e;--rbg:#fce8e6;
+  --orange:#c96b0a;--obg:#fdebd2;--gold:#92400e;--goldbg:#fef3c7;
+  --teal:#0e7490;--tbg:#ccf2f8;--purple:#5433a8;--pbg:#ece8fc;
+  --text:#0a1f35;--text2:#235080;--muted:#6688aa;
+  --fh:'Barlow Condensed',sans-serif;--fb:'DM Sans',sans-serif;
+  --sh:0 2px 14px rgba(21,88,168,.09);--r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;font-size:14px;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;z-index:9999;display:flex;background:linear-gradient(145deg,#05152b,#0d3566,#1558a8);}
+.ll{flex:1;display:flex;flex-direction:column;justify-content:center;padding:60px;color:#fff;}
+.lbrand{font-family:var(--fh);font-size:54px;font-weight:900;letter-spacing:3px;margin-bottom:6px;}
+.lbrand span{color:#5aacde;}
+.ltag{opacity:.6;font-size:15px;margin-bottom:40px;}
+.lfeat{display:flex;align-items:center;gap:12px;margin-bottom:14px;opacity:.75;font-size:13px;}
+.lfeat-ico{width:34px;height:34px;background:rgba(255,255,255,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.lr{width:460px;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:52px 44px;overflow-y:auto;}
+.ltitle{font-family:var(--fh);font-size:28px;font-weight:800;color:var(--accent);letter-spacing:1px;margin-bottom:4px;}
+.lsub{color:var(--muted);font-size:13px;margin-bottom:28px;}
+.lf{margin-bottom:16px;}
+.lf label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;}
+.lf input,.lf select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 15px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s;}
+.lf input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--aglow);}
+.lbtn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;font-family:var(--fh);font-size:17px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;}
+.lbtn:hover{background:var(--accent2);}
+.lerr{background:var(--rbg);color:var(--red);padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:14px;display:none;border-left:3px solid var(--red);}
+.l-tab-row{display:flex;margin-bottom:22px;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;}
+.l-tab{flex:1;padding:9px;text-align:center;font-family:var(--fh);font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;color:var(--muted);background:var(--bg);transition:all .2s;text-transform:uppercase;}
+.l-tab.active{background:var(--accent);color:#fff;}
+.l-panel{display:none;} .l-panel.active{display:block;}
+
+/* APP LAYOUT */
+#app{display:none;height:100vh;flex-direction:column;}
+header{background:var(--accent);height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 12px rgba(21,88,168,.3);position:sticky;top:0;z-index:100;}
+.hlogo{font-family:var(--fh);font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;}
+.hlogo span{font-size:11px;font-weight:400;opacity:.6;font-family:var(--fb);margin-left:6px;letter-spacing:1px;}
+.hright{display:flex;align-items:center;gap:8px;}
+.hbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:5px 12px;font-size:12px;color:#fff;cursor:pointer;font-family:var(--fb);}
+.uchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px 4px 4px;cursor:pointer;}
+.uav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:13px;font-weight:800;color:#fff;}
+.uname{font-size:12px;color:#fff;font-weight:600;}
+.urole{font-size:10px;opacity:.65;color:#fff;text-transform:uppercase;}
+
+.app-body{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:210px;background:#0a1f35;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.sb-section{padding:12px 14px 4px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:700;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 14px;color:rgba(255,255,255,.7);cursor:pointer;font-size:13px;transition:all .15s;border-left:3px solid transparent;position:relative;}
+.sb-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.sb-item.active{background:rgba(21,88,168,.35);color:#fff;border-left-color:var(--accent2);}
+.sb-ico{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.sb-badge{background:var(--red);color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:auto;}
+.sb-footer{margin-top:auto;padding:14px;border-top:1px solid rgba(255,255,255,.08);}
+.sb-user{display:flex;align-items:center;gap:9px;}
+.sb-user-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:14px;font-weight:900;color:#fff;flex-shrink:0;}
+.sb-user-name{font-size:13px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-user-role{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;}
+
+/* MAIN CONTENT */
+main{flex:1;overflow-y:auto;padding:20px 24px;}
+.section{display:none;animation:fadeUp .25s ease;}
+.section.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.sechdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.sectitle{font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;box-shadow:var(--sh);}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c,var(--accent));}
+.stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:5px;font-weight:600;}
+.stat .val{font-family:var(--fh);font-size:34px;font-weight:900;line-height:1;color:var(--text);}
+.stat .sub{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* BUTTONS */
+.btn{padding:7px 15px;border-radius:8px;font-family:var(--fh);font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border:none;text-transform:uppercase;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.bp{background:var(--accent);color:#fff;}
+.bp:hover{background:var(--accent2);}
+.bg{background:transparent;color:var(--text2);border:1.5px solid var(--border);}
+.bg:hover{border-color:var(--accent);color:var(--accent);background:var(--s2);}
+.bsm{padding:4px 9px;font-size:11px;}
+.bd{background:var(--red);color:#fff;}
+.be{background:var(--s2);color:var(--accent);border:1px solid var(--border);}
+.bwb{background:var(--pbg);color:var(--purple);border:1px solid #c5b8f0;}
+.bteal{background:var(--tbg);color:var(--teal);border:1px solid #9de0ec;}
+.bgold{background:var(--goldbg);color:var(--gold);border:1.5px solid #f0d070;}
+
+/* TABLES */
+.tw{overflow-x:auto;border-radius:var(--r);box-shadow:var(--sh);}
+table{width:100%;border-collapse:collapse;background:var(--surface);}
+thead th{background:var(--s2);padding:10px 13px;text-align:left;font-family:var(--fh);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody td{padding:10px 13px;border-bottom:1px solid var(--s2);font-size:13px;vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--bg);}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;}
+.bg-g{background:var(--gbg);color:var(--green);}
+.bg-r{background:var(--rbg);color:var(--red);}
+.bg-b{background:var(--s2);color:var(--accent);}
+.bg-o{background:var(--obg);color:var(--orange);}
+.bg-t{background:var(--tbg);color:var(--teal);}
+.bg-p{background:var(--pbg);color:var(--purple);}
+.bg-gold{background:var(--goldbg);color:var(--gold);}
+
+/* MODALS */
+.ov{position:fixed;inset:0;background:rgba(10,31,53,.55);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;}
+.ov.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border-radius:16px;padding:28px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(10,31,53,.25);}
+.modal h2{font-family:var(--fh);font-size:22px;font-weight:800;letter-spacing:1px;color:var(--accent);margin-bottom:4px;text-transform:uppercase;}
+.msub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fg{display:flex;flex-direction:column;}
+.fg.full{grid-column:1/-1;}
+.fg label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:var(--fb);font-size:13px;outline:none;width:100%;transition:border-color .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);background:#fff;}
+.fsec{grid-column:1/-1;font-family:var(--fh);font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 0 4px;border-top:1px solid var(--border);margin-top:4px;}
+.mac{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 20px;color:var(--muted);}
+.ei{font-size:40px;margin-bottom:12px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#0a1f35;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.win{background:var(--green);}
+.toast.err{background:var(--red);}
+
+/* ROLE PILLS */
+.rp{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.rp-admin{background:#fce8e6;color:#b52b1e;}
+.rp-manager{background:var(--gbg);color:var(--green);}
+.rp-driver{background:var(--s2);color:var(--accent);}
+.rp-office{background:var(--pbg);color:var(--purple);}
+
+/* REPORT CARDS */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px;}
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);}
+.rcard h3{font-family:var(--fh);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bg);font-size:13px;}
+.rrow:last-child{border-bottom:none;}
+.rv{font-weight:700;font-family:var(--fh);font-size:15px;}
+
+/* USER CARDS */
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.ucard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;align-items:flex-start;gap:12px;box-shadow:var(--sh);}
+.uavbig{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:18px;font-weight:900;color:#fff;flex-shrink:0;}
+
+/* MESSAGES */
+.msg-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:var(--sh);}
+.msg-item.sys{border-left:4px solid var(--accent);background:var(--s2);}
+.msg-item.warn{border-left-color:var(--red);background:var(--rbg);}
+.msg-item.ok{border-left-color:var(--green);background:var(--gbg);}
+.msg-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:11px;font-weight:900;color:#fff;flex-shrink:0;}
+.msg-body{font-size:13px;line-height:1.6;white-space:pre-wrap;}
+.msg-replies{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:7px;}
+.msg-reply-bubble{background:var(--bg);border:1px solid var(--border);border-radius:0 10px 10px 10px;padding:7px 11px;flex:1;}
+
+/* TRIP PROGRESS */
+.tp-notif{background:var(--goldbg);border:1px solid #f0d070;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;display:none;}
+.tp-notif.show{display:block;}
+.tp-notif-title{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.tp-notif-item{font-size:12px;color:var(--gold);padding:2px 0;}
+.tp-legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.tp-leg{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);}
+.tp-leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.tp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:var(--sh);transition:border-color .2s;}
+.tp-card.tp-delayed{border:2px solid var(--red);background:var(--rbg);}
+.tp-card.tp-warn{border:2px solid #e8a020;background:var(--obg);}
+.tp-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.tp-id{font-family:var(--fh);font-weight:700;font-size:15px;color:var(--accent);}
+.tp-sub{font-size:12px;color:var(--muted);}
+.tp-pill{margin-left:auto;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:700;text-transform:uppercase;flex-shrink:0;}
+.tp-pill-red{background:var(--rbg);color:var(--red);}
+.tp-pill-amber{background:var(--obg);color:var(--orange);}
+.tp-bar-track{display:flex;border-radius:6px;height:12px;width:100%;overflow:hidden;margin-bottom:10px;background:var(--s2);}
+.tp-bar-seg{height:100%;transition:background .3s,flex .4s;}
+.tp-stage-row{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.tp-sbtn{border:1.5px solid var(--border);border-radius:7px;padding:5px 11px;font-size:12px;cursor:pointer;background:var(--bg);color:var(--text2);transition:all .15s;white-space:nowrap;font-family:var(--fb);}
+.tp-sbtn:hover{border-color:var(--accent);color:var(--accent);}
+.tp-sbtn.tp-on{color:#fff;border-color:transparent;}
+.tp-fbtn{border:1px solid #f09595;border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;background:var(--surface);color:var(--red);white-space:nowrap;font-family:var(--fb);}
+.tp-fbtn.tp-fon{background:var(--red);color:#fff;border-color:var(--red);}
+.tp-dnote{font-size:11px;color:var(--red);margin-top:4px;display:none;}
+.tp-dnote.show{display:block;}
+.tp-ts{font-size:11px;color:var(--muted);margin-top:6px;}
+.tp-loc-box{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.tp-map-canvas{width:100%;height:0;background:var(--s2);position:relative;overflow:hidden;}
+.tp-map-canvas.has-pts{height:160px;}
+.tp-loc-info{padding:9px 12px;display:flex;align-items:center;gap:10px;background:var(--surface);}
+.tp-loc-icon{width:30px;height:30px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.tp-loc-icon.has-loc{background:var(--s2);border:1.5px solid var(--accent);}
+.tp-loc-text{flex:1;}
+.tp-loc-name{font-size:13px;font-weight:600;color:var(--accent);}
+.tp-loc-time{font-size:11px;color:var(--muted);}
+.tp-loc-coords{font-size:10px;color:var(--muted);font-family:monospace;}
+.tp-loc-none{font-size:12px;color:var(--muted);font-style:italic;}
+.tp-loc-hist{font-size:11px;color:var(--muted);padding:5px 12px 8px;border-top:1px solid var(--s2);background:var(--surface);}
+.tp-btn-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.tp-wa-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1.5px solid #25D366;background:#f0fdf4;color:#075E54;font-size:12px;cursor:pointer;font-family:var(--fb);font-weight:600;}
+.tp-wa-btn:hover{background:#dcfce7;}
+.tp-map-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--fb);}
+.tp-map-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tp-log-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--accent);background:var(--s2);color:var(--accent);font-size:12px;cursor:pointer;font-family:var(--fb);}
+.tp-log-btn:hover{background:var(--accent);color:#fff;}
+.tp-trail-badge{display:inline-flex;align-items:center;gap:4px;background:var(--s2);color:var(--accent);border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600;margin-left:auto;}
+.tp-trail-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.tp-log-modal{display:none;position:absolute;inset:0;z-index:500;background:rgba(10,31,53,.5);align-items:center;justify-content:center;padding:20px;}
+.tp-log-modal.open{display:flex;}
+.tp-log-box{background:var(--surface);border-radius:var(--r);padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(10,31,53,.25);}
+.tp-log-box h3{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:14px;}
+.tp-log-box .fg{margin-bottom:12px;}
+.tp-log-box label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px;}
+.tp-log-box input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:var(--fb);font-size:13px;outline:none;}
+.tp-log-box input:focus{border-color:var(--accent);}
+.tp-log-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}
+
+@media(max-width:768px){
+  .ll{display:none;}
+  .lr{width:100%;padding:36px 28px;}
+  .sidebar{display:none;}
+  .mob-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#0a1f35;border-top:1px solid rgba(255,255,255,.1);z-index:200;height:58px;}
+  .mob-nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:rgba(255,255,255,.6);font-size:9px;font-family:var(--fb);cursor:pointer;padding:4px 0;}
+  .mob-nb.active{color:#5aacde;}
+  .mob-nb-ico{font-size:18px;}
+  main{padding:14px;padding-bottom:70px;}
+}
+@media(min-width:769px){
+  .mob-nav{display:none;}
+  #app{display:flex !important;flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="ll">
+    <div class="lbrand">N-<span>FAITH</span><br>LTD</div>
+    <div class="ltag">Freight & Cargo Operations</div>
+    <div class="lfeat"><div class="lfeat-ico">🚛</div>Trip & Waybill Management</div>
+    <div class="lfeat"><div class="lfeat-ico">📦</div>Cargo & Deliveries</div>
+    <div class="lfeat"><div class="lfeat-ico">⛽</div>Fuel & Maintenance</div>
+    <div class="lfeat"><div class="lfeat-ico">💵</div>Revenue Tracking</div>
+  </div>
+  <div class="lr">
+    <div class="ltitle">Welcome back</div>
+    <div class="lsub">Sign in to your account</div>
+    <div class="l-tab-row">
+      <div class="l-tab active" id="ltab-email" onclick="switchLoginTab('email')">📧 Email</div>
+      <div class="l-tab" id="ltab-phone" onclick="switchLoginTab('phone')">📱 Phone</div>
+      <div class="l-tab" id="ltab-register" onclick="switchLoginTab('register')">✨ New</div>
+    </div>
+
+    <!-- Email Login -->
+    <div class="l-panel active" id="lpanel-email">
+      <div id="lerr" class="lerr"></div>
+      <div class="lf"><label>Email</label><input id="l-email" type="email" placeholder="your@email.com"></div>
+      <div class="lf"><label>Password</label>
+        <div style="position:relative;">
+          <input id="l-pass" type="password" placeholder="Password" style="padding-right:48px;">
+          <button type="button" onclick="togglePwd('l-pass','eye-lp')" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:0;line-height:1;" id="eye-lp">👁️</button>
+        </div>
+      </div>
+      <button class="lbtn" onclick="doLogin()">Sign In →</button>
+    </div>
+
+    <!-- Phone Login -->
+    <div class="l-panel" id="lpanel-phone">
+      <div id="lerr-phone" class="lerr"></div>
+      <div class="lf"><label>Phone Number</label><input id="l-phone" type="tel" placeholder="+233 24 123 4567"></div>
+      <div class="lf"><label>Password</label>
+        <div style="position:relative;">
+          <input id="l-pass-phone" type="password" placeholder="Password" style="padding-right:48px;">
+          <button type="button" onclick="togglePwd('l-pass-phone','eye-lpp')" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:0;line-height:1;" id="eye-lpp">👁️</button>
+        </div>
+      </div>
+      <button class="lbtn" onclick="doLoginPhone()">Sign In →</button>
+      <div style="margin-top:12px;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:11px 13px;font-size:12px;color:var(--muted);">
+        💡 Your phone number must be saved in your account by the admin.
+      </div>
+    </div>
+
+    <!-- Register -->
+    <div class="l-panel" id="lpanel-register">
+      <div id="reg-err" class="lerr"></div>
+      <div id="reg-suc" style="background:var(--gbg);color:var(--green);padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:14px;display:none;"></div>
+      <div class="lf"><label>Registration Code</label><input id="reg-code" type="text" placeholder="Get code from admin" style="text-transform:uppercase;letter-spacing:3px;font-weight:700;" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="lf"><label>Full Name</label><input id="reg-name" type="text" placeholder="Your full name"></div>
+      <div class="lf"><label>Email</label><input id="reg-email" type="email" placeholder="your@email.com"></div>
+      <div class="lf"><label>Phone Number</label><input id="reg-phone" type="tel" placeholder="+233 24 123 4567"></div>
+      <div class="lf"><label>Role</label>
+        <select id="reg-role"><option value="driver">Driver</option><option value="office">Office</option><option value="manager">Manager</option></select>
+      </div>
+      <div class="lf"><label>Password</label>
+        <div style="position:relative;">
+          <input id="reg-pass" type="password" placeholder="Min 6 characters" style="padding-right:48px;">
+          <button type="button" onclick="togglePwd('reg-pass','eye-rp')" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:0;line-height:1;" id="eye-rp">👁️</button>
+        </div>
+      </div>
+      <button class="lbtn" onclick="doRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="hlogo">🚛 N-FAITH LTD <span>FREIGHTOPS</span></div>
+    <div class="hright">
+      <span class="sdot" id="sdot"></span>
+      <div class="uchip" onclick="doLogout()">
+        <div class="uav" id="hdr-av" style="background:#1d72d1">A</div>
+        <div><div class="uname" id="hdr-name">Admin</div><div class="urole" id="hdr-role">admin</div></div>
+      </div>
+    </div>
+  </header>
+  <div class="app-body">
+    <div class="sidebar">
+      <div class="sb-section">Main</div>
+      <div class="sb-item active" onclick="showTab('dashboard')" id="snt-dashboard"><span class="sb-ico">📊</span>Overview</div>
+      <div class="sb-item" onclick="showTab('messages')" id="snt-messages"><span class="sb-ico">💬</span>Messages <span class="sb-badge" id="sb-msg-badge" style="display:none">0</span></div>
+      <div class="sb-item" onclick="showTab('trip-progress')" id="snt-trip-progress"><span class="sb-ico">📊</span>Trip Progress <span class="sb-badge" id="sb-prog-badge" style="display:none">0</span></div>
+      <div class="sb-item" onclick="showTab('trips')" id="snt-trips"><span class="sb-ico">🚛</span>Trips</div>
+      <div class="sb-item" onclick="showTab('waybills')" id="snt-waybills"><span class="sb-ico">📄</span>Waybills</div>
+      <div class="sb-item" onclick="showTab('reverse-loads')" id="snt-reverse-loads"><span class="sb-ico">🔄</span>Reverse Loads</div>
+      <div class="sb-section">Fuel & Fleet</div>
+      <div class="sb-item" onclick="showTab('fuel-control')" id="snt-fuel-control"><span class="sb-ico">⛽</span>Fuel Control</div>
+      <div class="sb-item" onclick="showTab('fuel-calculator')" id="snt-fuel-calculator"><span class="sb-ico">🧮</span>Fuel Calculator</div>
+      <div class="sb-item" onclick="showTab('truck-assignments')" id="snt-truck-assignments"><span class="sb-ico">🔧</span>Truck Assignments</div>
+      <div class="sb-section">People</div>
+      <div class="sb-item" onclick="showTab('drivers')" id="snt-drivers"><span class="sb-ico">👤</span>Drivers</div>
+      <div class="sb-item" onclick="showTab('driver-performance')" id="snt-driver-performance"><span class="sb-ico">🏅</span>Driver Performance</div>
+      <div class="sb-item" onclick="showTab('allowances')" id="snt-allowances"><span class="sb-ico">💰</span>Allowances</div>
+      <div class="sb-section">Operations</div>
+      <div class="sb-item" onclick="showTab('cargo')" id="snt-cargo"><span class="sb-ico">📦</span>Cargo</div>
+      <div class="sb-item" onclick="showTab('dispatch')" id="snt-dispatch"><span class="sb-ico">📋</span>Dispatch</div>
+      <div class="sb-item" onclick="showTab('maintenance')" id="snt-maintenance"><span class="sb-ico">🔩</span>Maintenance</div>
+      <div class="sb-item" onclick="showTab('safety')" id="snt-safety"><span class="sb-ico">🦺</span>Safety</div>
+      <div class="sb-section">Admin</div>
+      <div class="sb-item" onclick="showTab('revenue')" id="snt-revenue"><span class="sb-ico">💵</span>Revenue</div>
+      <div class="sb-item" onclick="showTab('company-performance')" id="snt-company-performance"><span class="sb-ico">🏢</span>Company Performance</div>
+      <div class="sb-item" onclick="showTab('documents')" id="snt-documents"><span class="sb-ico">🗂️</span>Documents</div>
+      <div class="sb-item" onclick="showTab('history')" id="snt-history"><span class="sb-ico">🕐</span>History</div>
+      <div class="sb-item" onclick="showTab('users')" id="snt-users"><span class="sb-ico">👥</span>Users</div>
+      <div class="sb-footer">
+        <div class="sb-user">
+          <div class="sb-user-av" id="sb-av" style="background:#1d72d1">A</div>
+          <div><div class="sb-user-name" id="sb-name">Admin</div><div class="sb-user-role" id="sb-role">admin</div></div>
+        </div>
+        <button onclick="doLogout()" style="width:100%;margin-top:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:7px;color:rgba(255,255,255,.7);cursor:pointer;font-family:var(--fb);font-size:12px;">Sign Out</button>
+      </div>
+    </div>
+    <main id="main-content">
+
+<!-- DASHBOARD -->
+<div class="section active" id="sec-dashboard">
+  <div class="sechdr"><div class="sectitle">📊 Overview</div><div id="dash-date" style="font-size:12px;color:var(--muted)"></div></div>
+  <div class="sgrid">
+    <div class="stat" style="--c:#1558a8"><div class="lbl">Total Trips</div><div class="val" id="ds-trips">0</div><div class="sub">All time</div></div>
+    <div class="stat" style="--c:#0b7a52"><div class="lbl">Active</div><div class="val" id="ds-active">0</div><div class="sub">In transit</div></div>
+    <div class="stat" style="--c:#0b7a52"><div class="lbl">Delivered</div><div class="val" id="ds-delivered">0</div><div class="sub">Completed</div></div>
+    <div class="stat" style="--c:#b52b1e"><div class="lbl">Delayed</div><div class="val" id="ds-delayed">0</div><div class="sub">Need attention</div></div>
+    <div class="stat" style="--c:#0e7490"><div class="lbl">Drivers</div><div class="val" id="ds-drivers">0</div><div class="sub">Registered</div></div>
+    <div class="stat" style="--c:#92400e"><div class="lbl">Revenue</div><div class="val" id="ds-revenue" style="font-size:22px">GH₵0</div><div class="sub">Total</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>N-Faith WB</th><th>Driver</th><th>Truck</th><th>Route</th><th>Cargo</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody id="dash-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- MESSAGES -->
+<div class="section" id="sec-messages">
+  <div class="sechdr">
+    <div><div class="sectitle">💬 Messages</div><div id="msg-sub" style="font-size:12px;color:var(--muted);margin-top:2px">Team communications</div></div>
+    <button class="btn bg bsm" onclick="markAllRead()">✓ Mark all read</button>
+  </div>
+  <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:var(--sh);">
+    <div class="fg2" style="margin-bottom:10px;">
+      <div class="fg"><label>Send To</label>
+        <select id="msg-to"><option value="all">📢 Everyone</option><option value="admin">👑 Admins</option><option value="manager">📋 Managers</option><option value="driver">🚛 Drivers</option><option value="office">🏢 Office</option></select>
+      </div>
+      <div class="fg"><label>Priority</label>
+        <select id="msg-priority"><option value="normal">Normal</option><option value="urgent">🔴 Urgent</option><option value="info">ℹ️ Info</option></select>
+      </div>
+    </div>
+    <textarea id="msg-body" rows="3" placeholder="Write a message… (Ctrl+Enter to send)" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--text);font-family:var(--fb);outline:none;resize:vertical;" onkeydown="if(event.ctrlKey&&event.key==='Enter')sendMsg()"></textarea>
+    <div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="btn bp" onclick="sendMsg()">Send →</button></div>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+    <button class="btn bsm" id="mf-all" onclick="setMsgFilter('all')">All</button>
+    <button class="btn bsm bg" id="mf-unread" onclick="setMsgFilter('unread')">Unread</button>
+    <button class="btn bsm bg" id="mf-urgent" onclick="setMsgFilter('urgent')">🔴 Urgent</button>
+    <button class="btn bsm bg" id="mf-system" onclick="setMsgFilter('system')">🔔 System</button>
+  </div>
+  <div id="msg-list"></div>
+</div>
+
+<!-- LIVE OPS -->
+<!-- TRIP PROGRESS -->
+<div class="section" id="sec-trip-progress">
+  <div class="sechdr"><div class="sectitle">📊 Trip Progress</div></div>
+  <div class="tp-notif" id="tp-notif-banner">
+    <div class="tp-notif-title">⚠️ Potential delay alert</div>
+    <div id="tp-notif-items"></div>
+  </div>
+  <div class="tp-legend" id="tp-legend"></div>
+  <div id="tp-list"></div>
+  <div class="tp-log-modal" id="tp-log-modal">
+    <div class="tp-log-box">
+      <h3>📍 Log Location</h3>
+      <input type="hidden" id="tp-log-trip-id">
+      <div class="fg"><label>Place Name</label><input id="tp-log-name" placeholder="e.g. Ejisu, Ashanti Region"></div>
+      <div class="fg"><label>Latitude</label><input id="tp-log-lat" type="number" step="0.0001" placeholder="e.g. 6.1029"></div>
+      <div class="fg"><label>Longitude</label><input id="tp-log-lng" type="number" step="0.0001" placeholder="e.g. -1.4731"></div>
+      <div class="fg"><label>Notes (optional)</label><input id="tp-log-notes" placeholder="e.g. Just left Ejisu checkpoint"></div>
+      <div class="tp-log-actions">
+        <button class="btn bg" onclick="tpCloseLogModal()">Cancel</button>
+        <button class="btn bp" onclick="tpSaveLocation()">Save Location</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRIPS -->
+<div class="section" id="sec-trips">
+  <div class="sechdr">
+    <div class="sectitle">🚛 Trips</div>
+    <button class="btn bp" onclick="openModal('trip')">+ New Trip</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>N-Faith WB</th><th>Driver</th><th>Truck</th><th>Pickup Co.</th><th>Route</th><th>Cargo</th><th>Co. WB No.</th><th>Qty</th><th>Revenue</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody id="trips-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- WAYBILLS -->
+<div class="section" id="sec-waybills">
+  <div class="sechdr"><div class="sectitle">📄 Waybill Register</div></div>
+  <div class="tw"><table>
+    <thead><tr><th>N-Faith WB No.</th><th>Company WB No.</th><th>Company WB File</th><th>Driver</th><th>Truck</th><th>Pickup Co.</th><th>Route</th><th>Cargo</th><th>Client</th><th>Amount (GH₵)</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="wb-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- COMPANY WAYBILL UPLOAD MODAL -->
+<div class="ov" id="modal-wb-upload">
+<div class="modal" style="max-width:500px;">
+  <h2>📄 Company Waybill</h2>
+  <p class="msub" id="wb-upload-sub">Attach the company waybill number and file</p>
+  <input type="hidden" id="wb-upload-trip-id">
+  <div class="fg2">
+    <div class="fg full">
+      <label>Company Waybill Number *</label>
+      <input id="wb-upload-number" placeholder="e.g. CWB-2024-001" style="font-family:monospace;font-weight:700;letter-spacing:2px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <div class="fg full">
+      <label>Upload Waybill File (PDF, Image)</label>
+      <div id="wb-drop-zone" style="border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;background:var(--bg);transition:border-color .2s;" onclick="document.getElementById('wb-file-input').click()" ondragover="wbDragOver(event)" ondragleave="wbDragLeave(event)" ondrop="wbDrop(event)">
+        <div style="font-size:28px;margin-bottom:6px;">📎</div>
+        <div style="font-size:13px;color:var(--muted);">Click to browse or drag & drop</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">PDF, JPG, PNG — max 5MB</div>
+      </div>
+      <input type="file" id="wb-file-input" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="wbFileSelected(this)">
+    </div>
+    <div class="fg full" id="wb-preview-wrap" style="display:none;">
+      <label>Selected File</label>
+      <div id="wb-preview" style="background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;" id="wb-preview-ico">📄</span>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;" id="wb-preview-name">—</div>
+          <div style="font-size:11px;color:var(--muted);" id="wb-preview-size">—</div>
+        </div>
+        <button onclick="wbClearFile()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;">✕</button>
+      </div>
+    </div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('wb-upload')">Cancel</button>
+    <button class="btn bp" onclick="saveWbUpload()">💾 Save</button>
+  </div>
+</div></div>
+
+<!-- REVERSE LOADS -->
+<div class="section" id="sec-reverse-loads">
+  <div class="sechdr"><div class="sectitle">🔄 Reverse Loads</div></div>
+  <div class="tw"><table>
+    <thead><tr><th>N-Faith WB</th><th>Driver</th><th>Outbound Route</th><th>Return Pickup</th><th>Return Dest</th><th>Return Cargo</th><th>Return Status</th></tr></thead>
+    <tbody id="rl-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- FUEL CONTROL -->
+<div class="section" id="sec-fuel-control">
+  <div class="sechdr">
+    <div class="sectitle">⛽ Fuel Control</div>
+    <button class="btn bp" onclick="openModal('fuel')">+ Log Fuel</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Truck</th><th>Driver</th><th>Station</th><th>Litres</th><th>Price/L</th><th>Cost (GH₵)</th><th>Date</th><th>Waybill</th><th>Actions</th></tr></thead>
+    <tbody id="fuel-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- FUEL CALCULATOR -->
+<div class="section" id="sec-fuel-calculator">
+  <div class="sechdr"><div class="sectitle">🧮 Fuel Calculator</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh);">
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">Trip Details</div>
+      <div class="fg" style="margin-bottom:10px;"><label>Select Trip (N-Faith WB)</label>
+        <select id="fc-trip" onchange="onFCTripChange()"><option value="">— Select trip —</option></select>
+      </div>
+      <div class="fg" style="margin-bottom:10px;"><label>Distance (km)</label><input id="fc-dist" type="number" placeholder="0" oninput="calcFuel()"></div>
+      <div class="fg" style="margin-bottom:10px;"><label>Truck</label><input id="fc-truck" type="text" placeholder="Truck ID" readonly style="background:var(--bg);"></div>
+      <div class="fg" style="margin-bottom:10px;"><label>Price per Litre (GH₵)</label><input id="fc-ppl" type="number" step="0.01" placeholder="0.00" oninput="calcFuel()"></div>
+      <div class="fg" style="margin-bottom:10px;"><label>Actual Litres Used</label><input id="fc-actual" type="number" step="0.1" placeholder="0.0" oninput="calcFuel()"></div>
+      <div class="fg"><label>Station Name</label><input id="fc-station" type="text" placeholder="e.g. Total Accra"></div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh);">
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">Results</div>
+      <div id="fc-results" style="color:var(--muted);font-size:13px;">Fill in trip details to see calculations.</div>
+      <button class="btn bp" style="width:100%;margin-top:16px;" onclick="saveFuelFromCalc()">💾 Save to Fuel Log</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRUCK ASSIGNMENTS -->
+<div class="section" id="sec-truck-assignments">
+  <div class="sechdr"><div class="sectitle">🔧 Truck Assignments</div></div>
+  <div class="tw"><table>
+    <thead><tr><th>Truck</th><th>Plate</th><th>Assigned Driver</th><th>Phone</th><th>Status</th><th>Total Trips</th></tr></thead>
+    <tbody id="trucks-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- DRIVERS -->
+<div class="section" id="sec-drivers">
+  <div class="sechdr">
+    <div class="sectitle">👤 Drivers</div>
+    <button class="btn bp" onclick="openModal('driver')">+ Add Driver</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Name</th><th>Truck</th><th>Plate</th><th>Phone</th><th>License</th><th>Expiry</th><th>Status</th><th>Trips</th><th>Actions</th></tr></thead>
+    <tbody id="drivers-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- DRIVER PERFORMANCE -->
+<div class="section" id="sec-driver-performance">
+  <div class="sechdr"><div class="sectitle">🏅 Driver Performance</div></div>
+  <div class="tw"><table>
+    <thead><tr><th>Rank</th><th>Driver</th><th>Trips</th><th>Delivered</th><th>Delayed</th><th>Revenue</th><th>Delivery Rate</th></tr></thead>
+    <tbody id="dperf-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- ALLOWANCES -->
+<div class="section" id="sec-allowances">
+  <div class="sechdr">
+    <div class="sectitle">💰 Allowances</div>
+    <button class="btn bp" onclick="openModal('allowance')">+ Log Allowance</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Date</th><th>Driver</th><th>Truck</th><th>N-Faith WB</th><th>Trip Allow.</th><th>Police</th><th>Other</th><th>Total (GH₵)</th><th>Paid By</th><th>Actions</th></tr></thead>
+    <tbody id="allow-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- CARGO -->
+<div class="section" id="sec-cargo">
+  <div class="sechdr">
+    <div class="sectitle">📦 Cargo & Deliveries</div>
+    <button class="btn bp" onclick="openModal('cargo')">+ New Shipment</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>ID</th><th>Co. WB No.</th><th>Description</th><th>Client</th><th>Pickup Co.</th><th>Qty</th><th>Unit Price</th><th>Amount (GH₵)</th><th>Weight (kg)</th><th>N-Faith WB</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="cargo-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- DISPATCH -->
+<div class="section" id="sec-dispatch">
+  <div class="sechdr">
+    <div class="sectitle">📋 Dispatch</div>
+    <button class="btn bp" onclick="openModal('dispatch')">+ New Order</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Ref No.</th><th>Date</th><th>Client</th><th>N-Faith WB</th><th>Priority</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="dispatch-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- MAINTENANCE -->
+<div class="section" id="sec-maintenance">
+  <div class="sechdr">
+    <div class="sectitle">🔩 Maintenance</div>
+    <button class="btn bp" onclick="openMaintModal()">+ Log Maintenance</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Truck</th><th>Driver</th><th>Type</th><th>Cost (GH₵)</th><th>Date</th><th>Notes</th><th>Actions</th></tr></thead>
+    <tbody id="maint-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- SAFETY -->
+<div class="section" id="sec-safety">
+  <div class="sechdr">
+    <div class="sectitle">🦺 Safety Log</div>
+    <button class="btn bp" onclick="openModal('safety')">+ Log Incident</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Date</th><th>Driver</th><th>Truck</th><th>Type</th><th>Description</th><th>Severity</th><th>Actions</th></tr></thead>
+    <tbody id="safety-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- REVENUE -->
+<div class="section" id="sec-revenue">
+  <div class="sechdr">
+    <div class="sectitle">💵 Revenue</div>
+    <button class="btn bg bsm" onclick="exportRevCSV()">⬇ Export CSV</button>
+  </div>
+  <div class="sgrid" style="margin-bottom:16px;">
+    <div class="stat" style="--c:#0b7a52"><div class="lbl">Total Revenue</div><div class="val" id="rev-total" style="font-size:22px">GH₵0</div><div class="sub">All trips</div></div>
+    <div class="stat" style="--c:#1558a8"><div class="lbl">With Revenue</div><div class="val" id="rev-count">0</div><div class="sub">Trips logged</div></div>
+    <div class="stat" style="--c:#b52b1e"><div class="lbl">Total Costs</div><div class="val" id="rev-costs" style="font-size:22px">GH₵0</div><div class="sub">Fuel + Allow.</div></div>
+    <div class="stat" style="--c:#5433a8"><div class="lbl">Net Margin</div><div class="val" id="rev-margin" style="font-size:22px">GH₵0</div><div class="sub">Revenue − Costs</div></div>
+    <div class="stat" style="--c:#c96b0a"><div class="lbl">Pending</div><div class="val" id="rev-pending">0</div><div class="sub">No revenue entered</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>N-Faith WB</th><th>Co. WB No.</th><th>Date</th><th>Driver</th><th>Client</th><th>Cargo</th><th>Qty</th><th>Unit Price</th><th>Revenue (GH₵)</th><th>Fuel</th><th>Allow.</th><th>Net</th><th>Status</th></tr></thead>
+    <tbody id="revenue-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- COMPANY PERFORMANCE -->
+<div class="section" id="sec-company-performance">
+  <div class="sechdr"><div class="sectitle">🏢 Company Performance</div></div>
+  <div class="sgrid">
+    <div class="stat" style="--c:#1558a8"><div class="lbl">Total Trips</div><div class="val" id="cp-trips">0</div></div>
+    <div class="stat" style="--c:#0b7a52"><div class="lbl">Delivery Rate</div><div class="val" id="cp-rate">0%</div></div>
+    <div class="stat" style="--c:#92400e"><div class="lbl">Revenue</div><div class="val" id="cp-rev" style="font-size:22px">GH₵0</div></div>
+    <div class="stat" style="--c:#b52b1e"><div class="lbl">Total Costs</div><div class="val" id="cp-costs" style="font-size:22px">GH₵0</div></div>
+  </div>
+  <div class="rgrid" id="cp-grid"></div>
+</div>
+
+<!-- DOCUMENTS -->
+<div class="section" id="sec-documents">
+  <div class="sechdr">
+    <div class="sectitle">🗂️ Documents</div>
+    <button class="btn bp" onclick="openModal('document')">+ Add Document</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Name</th><th>Type</th><th>Driver/Truck</th><th>Issue Date</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="docs-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- HISTORY -->
+<div class="section" id="sec-history">
+  <div class="sechdr"><div class="sectitle">🕐 History / Audit Log</div></div>
+  <div id="hist-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+</div>
+
+<!-- USERS -->
+<div class="section" id="sec-users">
+  <div class="sechdr">
+    <div class="sectitle">👥 Users</div>
+    <button class="btn bp" onclick="openModal('user')">+ Add User</button>
+  </div>
+  <div id="reg-code-box" style="background:var(--s2);border:1.5px dashed var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
+    <span style="font-size:22px">🔑</span>
+    <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:4px;">Staff Registration Code</div>
+    <div style="font-family:var(--fh);font-size:24px;font-weight:900;color:var(--accent);letter-spacing:4px;" id="codeval">—</div>
+    <div style="font-size:11px;color:var(--muted);">Share with new staff</div></div>
+    <button class="btn bg bsm" style="margin-left:auto;" onclick="regenCode()">🔄 Regenerate</button>
+  </div>
+  <div class="ugrid" id="users-grid"></div>
+  <div style="margin-top:24px;">
+    <div style="font-family:var(--fh);font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">🕐 Activity Log</div>
+    <div class="tw"><table>
+      <thead><tr><th>User</th><th>Role</th><th>Action</th><th>Date</th><th>Time</th><th>Duration</th></tr></thead>
+      <tbody id="activity-tbody"></tbody>
+    </table></div>
+    <button class="btn bg bsm" style="margin-top:8px;" onclick="clearActivity()">🗑 Clear Log</button>
+  </div>
+</div>
+
+    </main>
+  </div>
+  <!-- Mobile nav -->
+  <div class="mob-nav">
+    <button class="mob-nb active" id="mobnb-dashboard" onclick="mobNav('dashboard')"><span class="mob-nb-ico">📊</span>Overview</button>
+    <button class="mob-nb" id="mobnb-messages" onclick="mobNav('messages')"><span class="mob-nb-ico">💬</span>Messages</button>
+    <button class="mob-nb" id="mobnb-trips" onclick="mobNav('trips')"><span class="mob-nb-ico">🚛</span>Trips</button>
+    <button class="mob-nb" id="mobnb-fuel-control" onclick="mobNav('fuel-control')"><span class="mob-nb-ico">⛽</span>Fuel</button>
+    <button class="mob-nb" id="mobnb-more" onclick="mobNav('drivers')"><span class="mob-nb-ico">☰</span>More</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ========== MODALS ========== -->
+
+<!-- TRIP MODAL -->
+<div class="ov" id="modal-trip">
+<div class="modal" style="max-width:720px">
+  <h2 id="trip-m-title">Log New Trip</h2>
+  <div class="msub">N-Faith waybill auto-generated.</div>
+  <input type="hidden" id="t-eid">
+  <div class="fg2">
+    <div class="fsec">🚛 Assignment & Route</div>
+    <div class="fg"><label>Driver *</label><select id="t-driver"></select></div>
+    <div class="fg"><label>Truck *</label><select id="t-truck"></select></div>
+    <div class="fg"><label>Pickup Company *</label><input id="t-pickup" placeholder="Company cargo picked from"></div>
+    <div class="fg"><label>Origin</label><input id="t-origin" placeholder="e.g. Tema Port"></div>
+    <div class="fg"><label>Destination *</label><input id="t-dest" placeholder="e.g. Kumasi"></div>
+    <div class="fg"><label>Distance (km)</label><input id="t-dist" type="number" placeholder="0"></div>
+    <div class="fsec">📦 Cargo & Client</div>
+    <div class="fg full"><label>Cargo Description *</label><input id="t-cargo" placeholder="e.g. 200 bags of cement"></div>
+    <div class="fg"><label>Client / Receiver</label><input id="t-client" placeholder="Who receives cargo"></div>
+    <div class="fg"><label>Company WB No. (from company)</label><input id="t-company-wb" placeholder="e.g. CWB-2024-001" style="font-family:monospace;font-weight:700;"></div>
+    <div class="fg"><label>Weight (kg)</label><input id="t-weight" type="number" placeholder="0"></div>
+    <div class="fsec">💰 Revenue</div>
+    <div class="fg"><label>Quantity</label><input id="t-qty" type="number" placeholder="e.g. 200" oninput="calcTRev()"></div>
+    <div class="fg"><label>Unit Price (GH₵)</label><input id="t-unit-price" type="number" step="0.01" placeholder="e.g. 12.50" oninput="calcTRev()"></div>
+    <div class="fg"><label>Revenue (GH₵) AUTO</label><input id="t-revenue" type="number" readonly style="background:var(--gbg);border-color:var(--green);color:var(--green);font-weight:700;"></div>
+    <div class="fsec">📋 Details</div>
+    <div class="fg"><label>Status</label>
+      <select id="t-status"><option>Scheduled</option><option>Departed</option><option>In Transit</option><option>Delivered</option><option>Delayed</option><option>Cancelled</option></select>
+    </div>
+    <div class="fg"><label>Priority</label>
+      <select id="t-priority"><option>Normal</option><option>Urgent</option><option>High</option></select>
+    </div>
+    <div class="fg"><label>Date</label><input id="t-date" type="date"></div>
+    <div class="fg"><label>Manager / Dispatcher</label><input id="t-manager" placeholder="Name"></div>
+    <div class="fg full"><label>Notes</label><textarea id="t-notes" rows="2"></textarea></div>
+    <div class="fsec">🔄 Reverse Load</div>
+    <div class="fg"><label>Has Return Cargo?</label>
+      <select id="t-rl" onchange="toggleRL()"><option value="no">No</option><option value="yes">Yes</option></select>
+    </div>
+    <div id="rl-fields" style="display:none;grid-column:1/-1;">
+      <div class="fg2">
+        <div class="fg"><label>Return Pickup</label><input id="t-rv-pickup" placeholder="Pickup for return cargo"></div>
+        <div class="fg"><label>Return Destination</label><input id="t-rv-dest" placeholder="Where it goes"></div>
+        <div class="fg"><label>Return Cargo</label><input id="t-rv-cargo" placeholder="e.g. Empty containers"></div>
+        <div class="fg"><label>Return Client</label><input id="t-rv-client"></div>
+        <div class="fg"><label>Return Weight (kg)</label><input id="t-rv-weight" type="number" placeholder="0"></div>
+        <div class="fg"><label>Return Status</label>
+          <select id="t-rv-status"><option>Pending</option><option>In Transit</option><option>Delivered</option></select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('trip')">Cancel</button>
+    <button class="btn bp" onclick="saveTrip()">Save Trip</button>
+  </div>
+</div></div>
+
+<!-- DRIVER MODAL -->
+<div class="ov" id="modal-driver">
+<div class="modal">
+  <h2 id="drv-m-title">Add Driver</h2>
+  <input type="hidden" id="d-eid">
+  <div class="fg2">
+    <div class="fg"><label>Full Name *</label><input id="d-name" placeholder="Driver name"></div>
+    <div class="fg"><label>Phone</label><input id="d-phone" placeholder="+233 24 ..."></div>
+    <div class="fg"><label>Truck ID *</label><input id="d-truck" placeholder="e.g. TR-001"></div>
+    <div class="fg"><label>Plate Number</label><input id="d-plate" placeholder="e.g. GR-4521-18"></div>
+    <div class="fg"><label>License No.</label><input id="d-lic" placeholder="e.g. GH-DL-2021-4521"></div>
+    <div class="fg"><label>License Expiry</label><input id="d-lexp" type="date"></div>
+    <div class="fg"><label>License Class</label><input id="d-lclass" placeholder="e.g. Class C"></div>
+    <div class="fg"><label>Status</label>
+      <select id="d-status"><option>Available</option><option>On Trip</option><option>Off Duty</option></select>
+    </div>
+    <div class="fg"><label>Guarantor Name</label><input id="d-gname" placeholder="Guarantor full name"></div>
+    <div class="fg"><label>Guarantor Phone</label><input id="d-gphone" placeholder="+233 ..."></div>
+    <div class="fg full"><label>Guarantor Relationship</label><input id="d-grel" placeholder="e.g. Former supervisor"></div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('driver')">Cancel</button>
+    <button class="btn bp" onclick="saveDriver()">Save Driver</button>
+  </div>
+</div></div>
+
+<!-- FUEL MODAL -->
+<div class="ov" id="modal-fuel">
+<div class="modal">
+  <h2 id="fuel-m-title">Log Fuel Entry</h2>
+  <input type="hidden" id="f-eid">
+  <div class="fg2">
+    <div class="fg"><label>Truck *</label><select id="f-truck"></select></div>
+    <div class="fg"><label>Driver</label><select id="f-driver"></select></div>
+    <div class="fg"><label>Type</label>
+      <select id="f-type"><option>Fuel Refill</option><option>Oil Change</option><option>Tyre Change</option><option>Brake Service</option><option>Engine Repair</option><option>Battery</option><option>General Service</option></select>
+    </div>
+    <div class="fg"><label>Station / Supplier</label><input id="f-station" placeholder="e.g. Total Accra"></div>
+    <div class="fg"><label>Qty / Litres</label><input id="f-qty" type="number" step="0.1" placeholder="0"></div>
+    <div class="fg"><label>Price per Litre (GH₵)</label><input id="f-ppl" type="number" step="0.01" placeholder="0.00" oninput="calcFuelCost()"></div>
+    <div class="fg"><label>Total Cost (GH₵)</label><input id="f-cost" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="fg"><label>Date</label><input id="f-date" type="date"></div>
+    <div class="fg"><label>Linked N-Faith WB</label><select id="f-wb"><option value="">— None —</option></select></div>
+    <div class="fg full"><label>Notes</label><textarea id="f-notes" rows="2"></textarea></div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('fuel')">Cancel</button>
+    <button class="btn bp" onclick="saveFuel()">Save</button>
+  </div>
+</div></div>
+
+<!-- CARGO MODAL -->
+<div class="ov" id="modal-cargo">
+<div class="modal">
+  <h2 id="cargo-m-title">New Shipment</h2>
+  <input type="hidden" id="c-eid">
+  <div class="fg2">
+    <div class="fg full"><label>Description *</label><input id="c-desc" placeholder="e.g. 500 bags of cement"></div>
+    <div class="fg"><label>Company WB No. (from company)</label><input id="c-company-wb" placeholder="e.g. CWB-2024-001" style="font-family:monospace;font-weight:700;"></div>
+    <div class="fg"><label>Client</label><input id="c-client" placeholder="Client / receiver"></div>
+    <div class="fg"><label>Pickup Company</label><input id="c-pickup" placeholder="Pickup company"></div>
+    <div class="fg"><label>Quantity</label><input id="c-qty" type="number" placeholder="0" oninput="calcCargo()"></div>
+    <div class="fg"><label>Unit Price (GH₵)</label><input id="c-unit-price" type="number" step="0.01" placeholder="0.00" oninput="calcCargo()"></div>
+    <div class="fg"><label>Amount (GH₵)</label><input id="c-amount" type="number" step="0.01" placeholder="Auto or manual"></div>
+    <div class="fg"><label>Weight (kg)</label><input id="c-weight" type="number" placeholder="0"></div>
+    <div class="fg"><label>Linked N-Faith WB</label><select id="c-trip"><option value="">— None —</option></select></div>
+    <div class="fg"><label>ETA</label><input id="c-eta" type="date"></div>
+    <div class="fg"><label>Status</label>
+      <select id="c-status"><option>Pending</option><option>In Transit</option><option>Delivered</option><option>Delayed</option></select>
+    </div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('cargo')">Cancel</button>
+    <button class="btn bp" onclick="saveCargo()">Save</button>
+  </div>
+</div></div>
+
+<!-- ALLOWANCE MODAL -->
+<div class="ov" id="modal-allowance">
+<div class="modal">
+  <h2 id="allw-m-title">Log Allowance</h2>
+  <input type="hidden" id="aw-eid">
+  <div class="fg2">
+    <div class="fg"><label>Driver *</label><select id="aw-driver"></select></div>
+    <div class="fg"><label>Truck</label><select id="aw-truck"></select></div>
+    <div class="fg"><label>N-Faith WB</label><select id="aw-wb"><option value="">— None —</option></select></div>
+    <div class="fg"><label>Date</label><input id="aw-date" type="date"></div>
+    <div class="fg"><label>Trip Allowance (GH₵)</label><input id="aw-trip" type="number" placeholder="0" oninput="calcAllow()"></div>
+    <div class="fg"><label>Police Checkpoint (GH₵)</label><input id="aw-police" type="number" placeholder="0" oninput="calcAllow()"></div>
+    <div class="fg"><label>Other (GH₵)</label><input id="aw-other" type="number" placeholder="0" oninput="calcAllow()"></div>
+    <div class="fg"><label>Total (GH₵) AUTO</label><input id="aw-total" type="number" readonly style="background:var(--gbg);border-color:var(--green);font-weight:700;"></div>
+    <div class="fg"><label>Paid By</label><input id="aw-paidby" placeholder="Name"></div>
+    <div class="fg full"><label>Notes</label><textarea id="aw-notes" rows="2"></textarea></div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('allowance')">Cancel</button>
+    <button class="btn bp" onclick="saveAllowance()">Save</button>
+  </div>
+</div></div>
+
+<!-- DISPATCH MODAL -->
+<div class="ov" id="modal-dispatch">
+<div class="modal">
+  <h2>New Dispatch Order</h2>
+  <input type="hidden" id="dp-eid">
+  <div class="fg2">
+    <div class="fg"><label>Client *</label><input id="dp-client" placeholder="Client name"></div>
+    <div class="fg"><label>Contact</label><input id="dp-contact" placeholder="Phone / email"></div>
+    <div class="fg"><label>Linked N-Faith WB</label><select id="dp-wb"><option value="">— None —</option></select></div>
+    <div class="fg"><label>Priority</label>
+      <select id="dp-priority"><option>Normal</option><option>Urgent</option><option>High</option></select>
+    </div>
+    <div class="fg"><label>Date</label><input id="dp-date" type="date"></div>
+    <div class="fg"><label>Manager</label><input id="dp-manager" placeholder="Name"></div>
+    <div class="fg full"><label>Notes</label><textarea id="dp-notes" rows="2"></textarea></div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('dispatch')">Cancel</button>
+    <button class="btn bp" onclick="saveDispatch()">Save</button>
+  </div>
+</div></div>
+
+<!-- SAFETY MODAL -->
+<div class="ov" id="modal-safety">
+<div class="modal">
+  <h2>Log Safety Incident</h2>
+  <input type="hidden" id="saf-eid">
+  <div class="fg2">
+    <div class="fg"><label>Driver</label><select id="saf-driver"></select></div>
+    <div class="fg"><label>Truck</label><select id="saf-truck"></select></div>
+    <div class="fg"><label>Type</label>
+      <select id="saf-type"><option>Accident</option><option>Near Miss</option><option>Breakdown</option><option>Theft</option><option>Other</option></select>
+    </div>
+    <div class="fg"><label>Severity</label>
+      <select id="saf-severity"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+    </div>
+    <div class="fg"><label>Date</label><input id="saf-date" type="date"></div>
+    <div class="fg"><label>Location</label><input id="saf-location" placeholder="Where it happened"></div>
+    <div class="fg full"><label>Description</label><textarea id="saf-desc" rows="2"></textarea></div>
+    <div class="fg full"><label>Action Taken</label><textarea id="saf-action" rows="2"></textarea></div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('safety')">Cancel</button>
+    <button class="btn bp" onclick="saveSafety()">Save</button>
+  </div>
+</div></div>
+
+<!-- DOCUMENT MODAL -->
+<div class="ov" id="modal-document">
+<div class="modal">
+  <h2>Add Document</h2>
+  <input type="hidden" id="doc-eid">
+  <div class="fg2">
+    <div class="fg"><label>Document Name *</label><input id="doc-name" placeholder="e.g. Road Worthiness"></div>
+    <div class="fg"><label>Type</label>
+      <select id="doc-type"><option>License</option><option>Insurance</option><option>Road Worthiness</option><option>DVLA</option><option>Other</option></select>
+    </div>
+    <div class="fg"><label>Driver / Truck</label><select id="doc-driver"></select></div>
+    <div class="fg"><label>Status</label>
+      <select id="doc-status"><option>Valid</option><option>Expiring Soon</option><option>Expired</option></select>
+    </div>
+    <div class="fg"><label>Issue Date</label><input id="doc-issue" type="date"></div>
+    <div class="fg"><label>Expiry Date</label><input id="doc-expiry" type="date"></div>
+    <div class="fg full"><label>Notes</label><textarea id="doc-notes" rows="2"></textarea></div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('document')">Cancel</button>
+    <button class="btn bp" onclick="saveDocument()">Save</button>
+  </div>
+</div></div>
+
+<!-- USER MODAL -->
+<div class="ov" id="modal-user">
+<div class="modal">
+  <h2 id="user-m-title">Add User</h2>
+  <input type="hidden" id="u-eid">
+  <div class="fg2">
+    <div class="fg"><label>Full Name *</label><input id="u-name" placeholder="Full name"></div>
+    <div class="fg"><label>Email *</label><input id="u-email" type="email" placeholder="email@example.com"></div>
+    <div class="fg"><label>Password *</label>
+      <div style="position:relative;">
+        <input id="u-pass" type="password" placeholder="Min 6 characters" style="padding-right:44px;">
+        <button type="button" onclick="togglePwd('u-pass','eye-up')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);padding:0;line-height:1;" id="eye-up">👁️</button>
+      </div>
+    </div>
+    <div class="fg"><label>Phone</label><input id="u-phone" placeholder="+233 ..."></div>
+    <div class="fg"><label>Role *</label>
+      <select id="u-role" onchange="toggleUserRole()"><option value="driver">Driver</option><option value="office">Office</option><option value="manager">Manager</option><option value="admin">Admin</option></select>
+    </div>
+    <div class="fg" id="u-driver-wrap"><label>Linked Driver Name</label><select id="u-driver"></select></div>
+    <div class="fg full" id="u-access-wrap">
+      <label>Section Access (for non-admin/manager roles)</label>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer;">
+          <input type="checkbox" id="u-access-revenue"> 💵 Revenue
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer;">
+          <input type="checkbox" id="u-access-driverperf"> 🏅 Driver Performance
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer;">
+          <input type="checkbox" id="u-access-companyperf"> 🏢 Company Performance
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="mac">
+    <button class="btn bg" onclick="closeModal('user')">Cancel</button>
+    <button class="btn bp" onclick="saveUser()">Save User</button>
+  </div>
+</div></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const SESS = 'nf-sess-v1';
+let me = null;
+let users = {};
+let db = { trips:[], drivers:[], cargo:[], fuel:[], allowances:[], dispatches:[], safety:[], documents:[], messages:[], activityLog:[], tripN:1, cargoN:1, dispN:1, fuelN:1, allowN:1, safetyN:1, docN:1, regCode:'NFAITH2024' };
+let _syncTick = null;
+
+
+
+// ═══════════════════════════════════════════
+// STORAGE (localStorage only)
+// ═══════════════════════════════════════════
+function save(){
+  try{
+    localStorage.setItem('nf-db', JSON.stringify(db));
+    const dot = document.getElementById('sdot');
+    if(dot) dot.style.background = '#6ee7b7';
+  }catch(e){
+    const dot = document.getElementById('sdot');
+    if(dot) dot.style.background = '#fcd34d';
+  }
+}
+function saveUsers(){
+  try{ localStorage.setItem('nf-users', JSON.stringify(users)); }catch(e){}
+}
+async function load(){
+  try{
+    const u = localStorage.getItem('nf-users');
+    if(u) users = JSON.parse(u);
+  }catch(e){}
+  ensureAdmin();
+  try{
+    const d = localStorage.getItem('nf-db');
+    if(d){ db = {...db, ...JSON.parse(d)}; }
+  }catch(e){}
+}
+function startSync(){
+  // No remote sync — data is stored locally in this browser
+}
+function ensureAdmin(){
+  if(!users['admin_at_nfaith_com']){
+    users['admin_at_nfaith_com'] = {email:'admin@nfaith.com',name:'Administrator',password:'admin123',role:'admin',driverName:''};
+    saveUsers();
+  }
+}
+function eKey(email){ return email.toLowerCase().replace(/\./g,'_').replace(/@/g,'_at_'); }
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function togglePwd(inputId, btnId){
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if(!inp) return;
+  const isHidden = inp.type === 'password';
+  inp.type = isHidden ? 'text' : 'password';
+  if(btn) btn.textContent = isHidden ? '🙈' : '👁️';
+}
+function switchLoginTab(t){
+  ['email','phone','register'].forEach(k=>{
+    const tab = document.getElementById('ltab-'+k);
+    const panel = document.getElementById('lpanel-'+k);
+    if(tab) tab.classList.toggle('active', k===t);
+    if(panel) panel.classList.toggle('active', k===t);
+  });
+  // Clear errors when switching
+  ['lerr','lerr-phone','reg-err'].forEach(id=>{
+    const e = document.getElementById(id); if(e) e.style.display='none';
+  });
+}
+async function doLoginPhone(){
+  const phone = (document.getElementById('l-phone').value||'').trim();
+  const pass = document.getElementById('l-pass-phone').value||'';
+  const err = document.getElementById('lerr-phone');
+  err.style.display='none';
+  if(!phone||!pass){ err.textContent='Enter phone number and password.'; err.style.display='block'; return; }
+
+  const found = Object.entries(users).find(([k,u])=>{
+    const stored = (u.phone||'').replace(/[\s\-\(\)]/g,'');
+    const entered = phone.replace(/[\s\-\(\)]/g,'');
+    return stored && (stored===entered || stored.endsWith(entered) || entered.endsWith(stored));
+  });
+  if(!found){ err.textContent='No account found for that phone number.'; err.style.display='block'; return; }
+  const [key, u] = found;
+  if(u.password!==pass){ err.textContent='Wrong password.'; err.style.display='block'; return; }
+  me={email:u.email||key, name:u.name, role:u.role, driverName:u.driverName||'', access:u.access||[], loginTime:Date.now()};
+  try{localStorage.setItem(SESS,JSON.stringify(me));}catch(e){}
+  logActivity('Logged in (phone)');
+  document.getElementById('l-phone').value='';
+  document.getElementById('l-pass-phone').value='';
+  launchApp();
+}
+async function doLogin(){
+  const email=(document.getElementById('l-email').value||'').trim().toLowerCase();
+  const pass=document.getElementById('l-pass').value||'';
+  const err=document.getElementById('lerr');
+  const btn=document.querySelector('#lpanel-email .lbtn');
+  err.style.display='none';
+  if(!email||!pass){err.textContent='Please enter email and password.';err.style.display='block';return;}
+
+  const u=users[eKey(email)];
+  if(!u){err.textContent='No account found for: '+email+'. Ask your admin to check the account.';err.style.display='block';return;}
+  if(u.password!==pass){err.textContent='Wrong password. Passwords are case-sensitive.';err.style.display='block';return;}
+  me={email,name:u.name,role:u.role,driverName:u.driverName||'',access:u.access||[],loginTime:Date.now()};
+  try{localStorage.setItem(SESS,JSON.stringify(me));}catch(e){}
+  logActivity('Logged in');
+  document.getElementById('l-email').value='';
+  document.getElementById('l-pass').value='';
+  launchApp();
+}
+async function doRegister(){
+  const code=(document.getElementById('reg-code').value||'').trim().toUpperCase();
+  const name=(document.getElementById('reg-name').value||'').trim();
+  const email=(document.getElementById('reg-email').value||'').trim().toLowerCase();
+  const role=document.getElementById('reg-role').value;
+  const pass=document.getElementById('reg-pass').value;
+  const phone=(document.getElementById('reg-phone').value||'').trim();
+  const err=document.getElementById('reg-err');
+  const suc=document.getElementById('reg-suc');
+  const btn=document.querySelector('#lpanel-register .lbtn');
+  err.style.display='none'; suc.style.display='none';
+
+  if(!code) return showErr(err,'Enter the registration code from your admin.');
+  if(!name) return showErr(err,'Enter your full name.');
+  if(!email||!email.includes('@')) return showErr(err,'Enter a valid email address.');
+  if(!pass||pass.length<6) return showErr(err,'Password must be at least 6 characters.');
+
+  const validCode=(db.regCode||'NFAITH2024').trim().toUpperCase();
+  if(code!==validCode) return showErr(err,'Invalid registration code. Ask your admin for the current code.');
+  if(users[eKey(email)]) return showErr(err,'This email is already registered. Try signing in instead.');
+
+  // Create account
+  users[eKey(email)]={email,name,password:pass,role,driverName:'',phone,access:[]};
+  saveUsers();
+
+  suc.textContent='✅ Account created for '+name+'! Signing you in now…';
+  suc.style.display='block';
+  err.style.display='none';
+  ['reg-code','reg-name','reg-email','reg-pass','reg-phone'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  setTimeout(()=>{
+    switchLoginTab('email');
+    const emailEl=document.getElementById('l-email');
+    if(emailEl) emailEl.value=email;
+  },2000);
+}
+function showErr(el,msg){el.textContent=msg;el.style.display='block';}
+function doLogout(){
+  if(_syncTick) clearInterval(_syncTick);
+  logActivity('Logged out');
+  me=null;
+  try{localStorage.removeItem(SESS);}catch(e){}
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+function launchApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  updateHeader();
+  applyRoleVisibility();
+  startSync();
+  render();
+}
+
+// ═══════════════════════════════════════════
+// PERMISSIONS
+// ═══════════════════════════════════════════
+const can = {
+  isAdmin:()=>me?.role==='admin',
+  isManager:()=>['admin','manager'].includes(me?.role),
+  isDriver:()=>me?.role==='driver',
+  edit:()=>['admin','manager','office'].includes(me?.role),
+  del:()=>['admin','manager'].includes(me?.role),
+  viewRevenue:()=>can.isManager()||(me?.access||[]).includes('revenue'),
+  viewDriverPerf:()=>can.isManager()||(me?.access||[]).includes('driver-performance'),
+  viewCompanyPerf:()=>can.isManager()||(me?.access||[]).includes('company-performance'),
+  viewAnyPerf:()=>can.isManager()||(me?.access||[]).some(a=>['revenue','driver-performance','company-performance'].includes(a)),
+};
+
+// ═══════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+function sb(status){
+  const m={
+    'Scheduled':'bg-b','Departed':'bg-b','In Transit':'bg-b','Loading':'bg-b','At Factory':'bg-b',
+    'Delivered':'bg-g','Returned':'bg-g','Available':'bg-g',
+    'Delayed':'bg-r','Cancelled':'bg-r','Expired':'bg-r',
+    'Pending':'bg-o','Off Duty':'bg-o','On Leave':'bg-o',
+    'On Trip':'bg-t','Normal':'bg-b','Urgent':'bg-r','High':'bg-o',
+    'Valid':'bg-g','Expiring Soon':'bg-o',
+  };
+  return `<span class="badge ${m[status]||'bg-b'}">${status}</span>`;
+}
+function fmtGHC(n){ return 'GH₵'+Number(n||0).toLocaleString(); }
+function closeModal(t){ document.getElementById('modal-'+t)?.classList.remove('open'); }
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+function updateHeader(){
+  if(!me) return;
+  const av=(me.name||'A')[0].toUpperCase();
+  const colors={admin:'#b52b1e',manager:'#0b7a52',driver:'#1558a8',office:'#5433a8'};
+  const c=colors[me.role]||'#1558a8';
+  document.getElementById('hdr-av').textContent=av; document.getElementById('hdr-av').style.background=c;
+  document.getElementById('hdr-name').textContent=me.name;
+  document.getElementById('hdr-role').textContent=me.role;
+  document.getElementById('sb-av').textContent=av; document.getElementById('sb-av').style.background=c;
+  document.getElementById('sb-name').textContent=me.name;
+  document.getElementById('sb-role').textContent=me.role;
+}
+function applyRoleVisibility(){
+  const el=id=>document.getElementById(id);
+  if(el('snt-revenue'))       el('snt-revenue').style.display=can.viewRevenue()?'':'none';
+  if(el('snt-driver-performance')) el('snt-driver-performance').style.display=can.viewDriverPerf()?'':'none';
+  if(el('snt-company-performance')) el('snt-company-performance').style.display=can.viewCompanyPerf()?'':'none';
+  if(el('snt-users'))         el('snt-users').style.display=can.isAdmin()?'':'none';
+  if(can.isDriver()){
+    ['snt-cargo','snt-dispatch','snt-allowances','snt-truck-assignments','snt-history','snt-documents'].forEach(id=>{
+      const e=document.getElementById(id); if(e) e.style.display='none';
+    });
+  }
+}
+
+function showTab(tab){
+  if(tab==='revenue'&&!can.viewRevenue()){ toast('Access restricted','err'); return; }
+  if(tab==='driver-performance'&&!can.viewDriverPerf()){ toast('Access restricted','err'); return; }
+  if(tab==='company-performance'&&!can.viewCompanyPerf()){ toast('Access restricted','err'); return; }
+  if(tab==='users'&&!can.isAdmin()){ toast('Admin only','err'); return; }
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  const sec=document.getElementById('sec-'+tab);
+  const nav=document.getElementById('snt-'+tab);
+  if(sec) sec.classList.add('active');
+  if(nav) nav.classList.add('active');
+  if(tab==='users') renderUsers();
+  if(tab==='messages') renderMessages();
+}
+function mobNav(tab){
+  showTab(tab);
+  document.querySelectorAll('.mob-nb').forEach(b=>b.classList.remove('active'));
+  const b=document.getElementById('mobnb-'+tab);
+  if(b) b.classList.add('active');
+}
+function openModal(type){
+  populateSels();
+  const today=new Date().toISOString().split('T')[0];
+  if(type==='trip'){
+    document.getElementById('t-eid').value='';
+    document.getElementById('trip-m-title').textContent='Log New Trip';
+    ['t-pickup','t-origin','t-dest','t-cargo','t-client','t-notes','t-manager','t-company-wb'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    ['t-dist','t-weight','t-qty','t-unit-price','t-revenue'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('t-date').value=today;
+    document.getElementById('t-status').value='Scheduled';
+    document.getElementById('t-priority').value='Normal';
+    document.getElementById('t-rl').value='no'; toggleRL();
+    if(can.isDriver()&&me.driverName) document.getElementById('t-driver').value=me.driverName;
+  }
+  if(type==='driver'){
+    document.getElementById('d-eid').value='';
+    document.getElementById('drv-m-title').textContent='Add Driver';
+    ['d-name','d-phone','d-truck','d-plate','d-lic','d-lexp','d-lclass','d-gname','d-gphone','d-grel'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('d-status').value='Available';
+  }
+  if(type==='fuel'){
+    document.getElementById('f-eid').value='';
+    document.getElementById('fuel-m-title').textContent='Log Fuel Entry';
+    ['f-station','f-notes'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    ['f-qty','f-ppl','f-cost'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('f-date').value=today;
+    document.getElementById('f-type').value='Fuel Refill';
+  }
+  if(type==='cargo'){
+    document.getElementById('c-eid').value='';
+    document.getElementById('cargo-m-title').textContent='New Shipment';
+    ['c-desc','c-client','c-pickup','c-company-wb'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    ['c-qty','c-unit-price','c-amount','c-weight'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('c-eta').value=today;
+    document.getElementById('c-status').value='Pending';
+    document.getElementById('c-trip').value='';
+  }
+  if(type==='allowance'){
+    document.getElementById('aw-eid').value='';
+    document.getElementById('allw-m-title').textContent='Log Allowance';
+    ['aw-trip','aw-police','aw-other','aw-total'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('aw-date').value=today;
+    document.getElementById('aw-notes').value='';
+    document.getElementById('aw-paidby').value=me?.name||'';
+    document.getElementById('aw-wb').value='';
+  }
+  if(type==='dispatch'){
+    document.getElementById('dp-eid').value='';
+    ['dp-client','dp-contact','dp-manager','dp-notes'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('dp-date').value=today;
+    document.getElementById('dp-priority').value='Normal';
+    document.getElementById('dp-wb').value='';
+  }
+  if(type==='safety'){
+    document.getElementById('saf-eid').value='';
+    ['saf-desc','saf-location','saf-action'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('saf-date').value=today;
+    document.getElementById('saf-type').value='Accident';
+    document.getElementById('saf-severity').value='Low';
+  }
+  if(type==='document'){
+    document.getElementById('doc-eid').value='';
+    ['doc-name','doc-issue','doc-expiry','doc-notes'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('doc-status').value='Valid';
+    document.getElementById('doc-type').value='License';
+  }
+  if(type==='user'){
+    document.getElementById('u-eid').value='';
+    document.getElementById('user-m-title').textContent='Add User';
+    ['u-name','u-email','u-pass','u-phone'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('u-role').value='driver';
+    document.getElementById('u-access-revenue').checked=false;
+    document.getElementById('u-access-driverperf').checked=false;
+    document.getElementById('u-access-companyperf').checked=false;
+    toggleUserRole();
+  }
+  document.getElementById('modal-'+type).classList.add('open');
+}
+function openMaintModal(){
+  openModal('fuel');
+  document.getElementById('fuel-m-title').textContent='Log Maintenance';
+  document.getElementById('f-type').value='Oil Change';
+  // Hide Fuel Refill option
+  const sel=document.getElementById('f-type');
+  [...sel.options].forEach(o=>{ o.style.display=o.value==='Fuel Refill'?'none':''; });
+}
+function toggleRL(){
+  const v=document.getElementById('t-rl')?.value;
+  document.getElementById('rl-fields').style.display=v==='yes'?'block':'none';
+}
+function toggleUserRole(){
+  const r=document.getElementById('u-role')?.value;
+  const dw=document.getElementById('u-driver-wrap');
+  const aw=document.getElementById('u-access-wrap');
+  if(dw) dw.style.display=r==='driver'?'flex':'none';
+  if(aw){
+    if(r==='admin'||r==='manager'){
+      aw.style.opacity='0.45';
+      aw.style.pointerEvents='none';
+      aw.title='Admins and Managers have full access automatically';
+      document.getElementById('u-access-revenue').checked=false;
+      document.getElementById('u-access-driverperf').checked=false;
+      document.getElementById('u-access-companyperf').checked=false;
+    } else {
+      aw.style.opacity='1';
+      aw.style.pointerEvents='';
+      aw.title='';
+    }
+  }
+}
+function calcTRev(){
+  const q=parseFloat(document.getElementById('t-qty').value)||0;
+  const p=parseFloat(document.getElementById('t-unit-price').value)||0;
+  document.getElementById('t-revenue').value=q&&p?(q*p).toFixed(2):'';
+}
+function calcCargo(){
+  const q=parseFloat(document.getElementById('c-qty').value)||0;
+  const p=parseFloat(document.getElementById('c-unit-price').value)||0;
+  if(q&&p) document.getElementById('c-amount').value=(q*p).toFixed(2);
+}
+function calcFuelCost(){
+  const q=parseFloat(document.getElementById('f-qty').value)||0;
+  const p=parseFloat(document.getElementById('f-ppl').value)||0;
+  if(q&&p) document.getElementById('f-cost').value=(q*p).toFixed(2);
+}
+function calcAllow(){
+  const t=parseFloat(document.getElementById('aw-trip').value)||0;
+  const p=parseFloat(document.getElementById('aw-police').value)||0;
+  const o=parseFloat(document.getElementById('aw-other').value)||0;
+  document.getElementById('aw-total').value=(t+p+o).toFixed(2);
+}
+
+function populateSels(){
+  const drivers=db.drivers||[];
+  const trips=db.trips||[];
+  const dOpts=drivers.map(d=>`<option value="${d.name}">${d.name} (${d.truck})</option>`).join('');
+  const tOpts=drivers.map(d=>`<option value="${d.truck}">${d.truck} — ${d.name}</option>`).join('');
+  const wbOpts=trips.map(t=>`<option value="${t.waybill}">${t.waybill} · ${t.driver} · ${t.dest}</option>`).join('');
+  const dFull=drivers.map(d=>`<option value="${d.name}">${d.name}</option>`).join('');
+  const drivSels=['t-driver','aw-driver','saf-driver'];
+  const truckSels=['t-truck','f-truck','aw-truck','saf-truck'];
+  drivSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML=dOpts||'<option>No drivers yet</option>'; });
+  truckSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML=tOpts||'<option>No trucks yet</option>'; });
+  const wbSels=['f-wb','aw-wb','dp-wb'];
+  wbSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML='<option value="">— None —</option>'+wbOpts; });
+  const cTrip=document.getElementById('c-trip');
+  if(cTrip) cTrip.innerHTML='<option value="">— None —</option>'+wbOpts;
+  const docDrv=document.getElementById('doc-driver');
+  if(docDrv) docDrv.innerHTML=dFull||'<option>No drivers</option>';
+  const uDrv=document.getElementById('u-driver');
+  if(uDrv) uDrv.innerHTML='<option value="">— None —</option>'+dFull;
+  const fcTrip=document.getElementById('fc-trip');
+  if(fcTrip){ const prev=fcTrip.value; fcTrip.innerHTML='<option value="">— Select trip —</option>'+wbOpts; if(prev) fcTrip.value=prev; }
+}
+
+// ═══════════════════════════════════════════
+// SAVE FUNCTIONS
+// ═══════════════════════════════════════════
+function saveTrip(){
+  const pickup=(document.getElementById('t-pickup').value||'').trim();
+  const dest=(document.getElementById('t-dest').value||'').trim();
+  const cargo=(document.getElementById('t-cargo').value||'').trim();
+  if(!pickup||!dest||!cargo){ toast('Pickup, destination and cargo required','err'); return; }
+  const eid=document.getElementById('t-eid').value;
+  const qty=parseFloat(document.getElementById('t-qty').value)||0;
+  const unitPrice=parseFloat(document.getElementById('t-unit-price').value)||0;
+  const revenue=qty&&unitPrice?parseFloat((qty*unitPrice).toFixed(2)):0;
+  const data={
+    driver:document.getElementById('t-driver').value,
+    truck:document.getElementById('t-truck').value,
+    pickupCompany:pickup,
+    origin:document.getElementById('t-origin').value,
+    dest, cargo,
+    client:document.getElementById('t-client').value,
+    companyWaybill:document.getElementById('t-company-wb').value,
+    weight:parseFloat(document.getElementById('t-weight').value)||0,
+    dist:parseFloat(document.getElementById('t-dist').value)||0,
+    status:document.getElementById('t-status').value,
+    priority:document.getElementById('t-priority').value,
+    date:document.getElementById('t-date').value,
+    notes:document.getElementById('t-notes').value,
+    manager:document.getElementById('t-manager').value,
+    qty, unitPrice, revenue,
+    reverseLoad:document.getElementById('t-rl').value,
+    rvPickup:document.getElementById('t-rv-pickup').value,
+    rvDest:document.getElementById('t-rv-dest').value,
+    rvCargo:document.getElementById('t-rv-cargo').value,
+    rvClient:document.getElementById('t-rv-client').value,
+    rvWeight:parseFloat(document.getElementById('t-rv-weight').value)||0,
+    rvStatus:document.getElementById('t-rv-status').value,
+    enteredBy:me?.email||'',
+    enteredByName:me?.name||'',
+    systemEntryTime:new Date().toLocaleString('en-GB'),
+  };
+  if(eid){
+    const i=db.trips.findIndex(t=>t.id===eid);
+    if(i>=0){ db.trips[i]={...db.trips[i],...data}; syncCargoFromTrip(db.trips[i]); }
+    toast('Trip updated!');
+  } else {
+    const waybill='WB-'+String(db.tripN).padStart(3,'0');
+    const id='T-'+String(db.tripN).padStart(3,'0');
+    db.tripN++;
+    const trip={id, waybill, ...data};
+    db.trips.push(trip);
+    syncCargoFromTrip(trip);
+    // Notify drivers
+    if(data.driver) sysMsg('📋 New trip '+waybill+' assigned to '+data.driver+'\n'+data.origin+' → '+data.dest,'info','driver');
+    toast('Trip '+waybill+' logged!','win');
+  }
+  save(); closeModal('trip'); render();
+}
+function syncCargoFromTrip(trip){
+  if(!trip.cargo) return;
+  const existing=db.cargo.find(c=>c.linkedTripId===trip.id);
+  const cd={
+    desc:trip.cargo, client:trip.client, pickupCompany:trip.pickupCompany,
+    weight:trip.weight, trip:trip.waybill, companyWaybill:trip.companyWaybill||'',
+    qty:trip.qty, unitPrice:trip.unitPrice, amount:trip.revenue||0,
+    eta:trip.date, status:trip.status==='Delivered'?'Delivered':trip.status==='In Transit'?'In Transit':'Pending',
+    linkedTripId:trip.id,
+  };
+  if(existing){ Object.assign(existing, cd); }
+  else { db.cargo.push({id:'C-'+String(db.cargoN++).padStart(3,'0'), ...cd}); }
+}
+function editTrip(id){
+  const t=db.trips.find(x=>x.id===id); if(!t) return;
+  if(can.isDriver()&&t.driver!==me.driverName){ toast('You can only edit your own trips','err'); return; }
+  populateSels();
+  document.getElementById('t-eid').value=id;
+  document.getElementById('trip-m-title').textContent='Edit Trip '+t.waybill;
+  document.getElementById('t-driver').value=t.driver||'';
+  document.getElementById('t-truck').value=t.truck||'';
+  document.getElementById('t-pickup').value=t.pickupCompany||'';
+  document.getElementById('t-origin').value=t.origin||'';
+  document.getElementById('t-dest').value=t.dest||'';
+  document.getElementById('t-cargo').value=t.cargo||'';
+  document.getElementById('t-client').value=t.client||'';
+  document.getElementById('t-company-wb').value=t.companyWaybill||'';
+  document.getElementById('t-weight').value=t.weight||'';
+  document.getElementById('t-dist').value=t.dist||'';
+  document.getElementById('t-qty').value=t.qty||'';
+  document.getElementById('t-unit-price').value=t.unitPrice||'';
+  document.getElementById('t-revenue').value=t.revenue||'';
+  document.getElementById('t-status').value=t.status||'Scheduled';
+  document.getElementById('t-priority').value=t.priority||'Normal';
+  document.getElementById('t-date').value=t.date||'';
+  document.getElementById('t-notes').value=t.notes||'';
+  document.getElementById('t-manager').value=t.manager||'';
+  document.getElementById('t-rl').value=t.reverseLoad||'no';
+  document.getElementById('t-rv-pickup').value=t.rvPickup||'';
+  document.getElementById('t-rv-dest').value=t.rvDest||'';
+  document.getElementById('t-rv-cargo').value=t.rvCargo||'';
+  document.getElementById('t-rv-client').value=t.rvClient||'';
+  document.getElementById('t-rv-weight').value=t.rvWeight||'';
+  document.getElementById('t-rv-status').value=t.rvStatus||'Pending';
+  toggleRL();
+  document.getElementById('modal-trip').classList.add('open');
+}
+function deleteTrip(id){
+  if(!can.del()) return toast('No permission','err');
+  if(!confirm('Delete this trip?')) return;
+  db.trips=db.trips.filter(t=>t.id!==id);
+  db.cargo=db.cargo.filter(c=>c.linkedTripId!==id);
+  save(); render(); toast('Deleted');
+}
+function saveDriver(){
+  const name=(document.getElementById('d-name').value||'').trim();
+  const truck=(document.getElementById('d-truck').value||'').trim();
+  if(!name||!truck){ toast('Name and truck required','err'); return; }
+  const eid=document.getElementById('d-eid').value;
+  const data={
+    name, truck,
+    phone:document.getElementById('d-phone').value,
+    plate:document.getElementById('d-plate').value,
+    license:document.getElementById('d-lic').value,
+    licenseExpiry:document.getElementById('d-lexp').value,
+    licenseClass:document.getElementById('d-lclass').value,
+    status:document.getElementById('d-status').value,
+    grantorName:document.getElementById('d-gname').value,
+    grantorPhone:document.getElementById('d-gphone').value,
+    grantorRel:document.getElementById('d-grel').value,
+  };
+  if(eid){ const i=db.drivers.findIndex(d=>d.id===eid); if(i>=0) db.drivers[i]={...db.drivers[i],...data}; toast('Driver updated!'); }
+  else { db.drivers.push({id:'D-'+Date.now(),...data}); toast('Driver added!','win'); }
+  save(); closeModal('driver'); render();
+}
+function editDriver(id){
+  const d=db.drivers.find(x=>x.id===id); if(!d) return;
+  document.getElementById('d-eid').value=id;
+  document.getElementById('drv-m-title').textContent='Edit Driver';
+  document.getElementById('d-name').value=d.name||'';
+  document.getElementById('d-phone').value=d.phone||'';
+  document.getElementById('d-truck').value=d.truck||'';
+  document.getElementById('d-plate').value=d.plate||'';
+  document.getElementById('d-lic').value=d.license||'';
+  document.getElementById('d-lexp').value=d.licenseExpiry||'';
+  document.getElementById('d-lclass').value=d.licenseClass||'';
+  document.getElementById('d-status').value=d.status||'Available';
+  document.getElementById('d-gname').value=d.grantorName||'';
+  document.getElementById('d-gphone').value=d.grantorPhone||'';
+  document.getElementById('d-grel').value=d.grantorRel||'';
+  document.getElementById('modal-driver').classList.add('open');
+}
+function deleteDriver(id){
+  if(!can.del()) return toast('No permission','err');
+  if(!confirm('Delete driver?')) return;
+  db.drivers=db.drivers.filter(d=>d.id!==id);
+  save(); render(); toast('Deleted');
+}
+function saveFuel(){
+  const truck=document.getElementById('f-truck').value;
+  if(!truck){ toast('Select a truck','err'); return; }
+  const eid=document.getElementById('f-eid').value;
+  const data={
+    truck, driver:document.getElementById('f-driver').value,
+    type:document.getElementById('f-type').value,
+    station:document.getElementById('f-station').value,
+    amount:parseFloat(document.getElementById('f-qty').value)||0,
+    pricePerLitre:parseFloat(document.getElementById('f-ppl').value)||0,
+    cost:parseFloat(document.getElementById('f-cost').value)||0,
+    date:document.getElementById('f-date').value,
+    linkedWaybill:document.getElementById('f-wb').value,
+    notes:document.getElementById('f-notes').value,
+    enteredBy:me?.name||'',
+  };
+  if(eid){ const i=db.fuel.findIndex(f=>f.id===eid); if(i>=0) db.fuel[i]={...db.fuel[i],...data}; toast('Updated!'); }
+  else { db.fuel.push({id:'F-'+String(db.fuelN++).padStart(3,'0'),...data}); toast('Fuel entry saved!','win'); }
+  // Re-show fuel refill option if it was hidden
+  const sel=document.getElementById('f-type');
+  [...(sel?.options||[])].forEach(o=>o.style.display='');
+  save(); closeModal('fuel'); render();
+}
+function editFuel(id){
+  const f=db.fuel.find(x=>x.id===id); if(!f) return;
+  populateSels();
+  document.getElementById('f-eid').value=id;
+  document.getElementById('fuel-m-title').textContent='Edit Entry';
+  document.getElementById('f-truck').value=f.truck||'';
+  document.getElementById('f-driver').value=f.driver||'';
+  document.getElementById('f-type').value=f.type||'Fuel Refill';
+  document.getElementById('f-station').value=f.station||'';
+  document.getElementById('f-qty').value=f.amount||'';
+  document.getElementById('f-ppl').value=f.pricePerLitre||'';
+  document.getElementById('f-cost').value=f.cost||'';
+  document.getElementById('f-date').value=f.date||'';
+  document.getElementById('f-wb').value=f.linkedWaybill||'';
+  document.getElementById('f-notes').value=f.notes||'';
+  document.getElementById('modal-fuel').classList.add('open');
+}
+function deleteFuel(id){
+  if(!can.del()) return toast('No permission','err');
+  if(!confirm('Delete entry?')) return;
+  db.fuel=db.fuel.filter(f=>f.id!==id);
+  save(); render(); toast('Deleted');
+}
+function saveCargo(){
+  const desc=(document.getElementById('c-desc').value||'').trim();
+  if(!desc){ toast('Description required','err'); return; }
+  const eid=document.getElementById('c-eid').value;
+  const data={
+    desc, client:document.getElementById('c-client').value,
+    pickupCompany:document.getElementById('c-pickup').value,
+    companyWaybill:document.getElementById('c-company-wb').value,
+    qty:parseFloat(document.getElementById('c-qty').value)||0,
+    unitPrice:parseFloat(document.getElementById('c-unit-price').value)||0,
+    amount:parseFloat(document.getElementById('c-amount').value)||0,
+    weight:parseFloat(document.getElementById('c-weight').value)||0,
+    trip:document.getElementById('c-trip').value,
+    eta:document.getElementById('c-eta').value,
+    status:document.getElementById('c-status').value,
+  };
+  if(eid){ const i=db.cargo.findIndex(c=>c.id===eid); if(i>=0) db.cargo[i]={...db.cargo[i],...data}; toast('Updated!'); }
+  else { db.cargo.push({id:'C-'+String(db.cargoN++).padStart(3,'0'),...data}); toast('Shipment added!','win'); }
+  save(); closeModal('cargo'); render();
+}
+function editCargo(id){
+  const c=db.cargo.find(x=>x.id===id); if(!c) return;
+  populateSels();
+  document.getElementById('c-eid').value=id;
+  document.getElementById('cargo-m-title').textContent='Edit Shipment';
+  document.getElementById('c-desc').value=c.desc||'';
+  document.getElementById('c-client').value=c.client||'';
+  document.getElementById('c-pickup').value=c.pickupCompany||'';
+  document.getElementById('c-company-wb').value=c.companyWaybill||'';
+  document.getElementById('c-qty').value=c.qty||'';
+  document.getElementById('c-unit-price').value=c.unitPrice||'';
+  document.getElementById('c-amount').value=c.amount||'';
+  document.getElementById('c-weight').value=c.weight||'';
+  document.getElementById('c-trip').value=c.trip||'';
+  document.getElementById('c-eta').value=c.eta||'';
+  document.getElementById('c-status').value=c.status||'Pending';
+  document.getElementById('modal-cargo').classList.add('open');
+}
+function deleteCargo(id){
+  if(!can.del()) return toast('No permission','err');
+  if(!confirm('Delete shipment?')) return;
+  db.cargo=db.cargo.filter(c=>c.id!==id);
+  save(); render(); toast('Deleted');
+}
+function saveAllowance(){
+  const driver=document.getElementById('aw-driver').value;
+  if(!driver){ toast('Select a driver','err'); return; }
+  const eid=document.getElementById('aw-eid').value;
+  const data={
+    driver, truck:document.getElementById('aw-truck').value,
+    waybill:document.getElementById('aw-wb').value,
+    date:document.getElementById('aw-date').value,
+    tripAllowance:parseFloat(document.getElementById('aw-trip').value)||0,
+    policeCheckpoint:parseFloat(document.getElementById('aw-police').value)||0,
+    other:parseFloat(document.getElementById('aw-other').value)||0,
+    total:parseFloat(document.getElementById('aw-total').value)||0,
+    paidBy:document.getElementById('aw-paidby').value,
+    notes:document.getElementById('aw-notes').value,
+  };
+  if(eid){ const i=db.allowances.findIndex(a=>a.id===eid); if(i>=0) db.allowances[i]={...db.allowances[i],...data}; toast('Updated!'); }
+  else { db.allowances.push({id:'AW-'+String(db.allowN++).padStart(3,'0'),...data}); toast('Allowance logged!','win'); }
+  save(); closeModal('allowance'); render();
+}
+function editAllowance(id){
+  const a=db.allowances.find(x=>x.id===id); if(!a) return;
+  populateSels();
+  document.getElementById('aw-eid').value=id;
+  document.getElementById('allw-m-title').textContent='Edit Allowance';
+  document.getElementById('aw-driver').value=a.driver||'';
+  document.getElementById('aw-truck').value=a.truck||'';
+  document.getElementById('aw-wb').value=a.waybill||'';
+  document.getElementById('aw-date').value=a.date||'';
+  document.getElementById('aw-trip').value=a.tripAllowance||'';
+  document.getElementById('aw-police').value=a.policeCheckpoint||'';
+  document.getElementById('aw-other').value=a.other||'';
+  document.getElementById('aw-total').value=a.total||'';
+  document.getElementById('aw-paidby').value=a.paidBy||'';
+  document.getElementById('aw-notes').value=a.notes||'';
+  document.getElementById('modal-allowance').classList.add('open');
+}
+function deleteAllowance(id){
+  if(!can.del()) return;
+  if(!confirm('Delete?')) return;
+  db.allowances=db.allowances.filter(a=>a.id!==id);
+  save(); render(); toast('Deleted');
+}
+function saveDispatch(){
+  const client=(document.getElementById('dp-client').value||'').trim();
+  if(!client){ toast('Client required','err'); return; }
+  const eid=document.getElementById('dp-eid').value;
+  const data={
+    client, contact:document.getElementById('dp-contact').value,
+    waybill:document.getElementById('dp-wb').value,
+    priority:document.getElementById('dp-priority').value,
+    date:document.getElementById('dp-date').value,
+    manager:document.getElementById('dp-manager').value,
+    notes:document.getElementById('dp-notes').value,
+    status:'Pending',
+  };
+  if(eid){ const i=db.dispatches.findIndex(d=>d.id===eid); if(i>=0) db.dispatches[i]={...db.dispatches[i],...data}; toast('Updated!'); }
+  else { db.dispatches.push({id:'DP-'+String(db.dispN++).padStart(3,'0'),...data}); toast('Dispatch order created!','win'); }
+  save(); closeModal('dispatch'); render();
+}
+function deleteDispatch(id){
+  if(!can.del()) return;
+  if(!confirm('Delete?')) return;
+  db.dispatches=db.dispatches.filter(d=>d.id!==id);
+  save(); render(); toast('Deleted');
+}
+function saveSafety(){
+  const desc=(document.getElementById('saf-desc').value||'').trim();
+  if(!desc){ toast('Description required','err'); return; }
+  const eid=document.getElementById('saf-eid').value;
+  const data={
+    driver:document.getElementById('saf-driver').value,
+    truck:document.getElementById('saf-truck').value,
+    type:document.getElementById('saf-type').value,
+    severity:document.getElementById('saf-severity').value,
+    date:document.getElementById('saf-date').value,
+    location:document.getElementById('saf-location').value,
+    desc, action:document.getElementById('saf-action').value,
+  };
+  if(eid){ const i=db.safety.findIndex(s=>s.id===eid); if(i>=0) db.safety[i]={...db.safety[i],...data}; toast('Updated!'); }
+  else { db.safety.push({id:'S-'+String(db.safetyN++).padStart(3,'0'),...data}); toast('Incident logged!','win'); }
+  save(); closeModal('safety'); render();
+}
+function deleteSafety(id){
+  if(!can.del()) return;
+  if(!confirm('Delete?')) return;
+  db.safety=db.safety.filter(s=>s.id!==id);
+  save(); render(); toast('Deleted');
+}
+function saveDocument(){
+  const name=(document.getElementById('doc-name').value||'').trim();
+  if(!name){ toast('Document name required','err'); return; }
+  const eid=document.getElementById('doc-eid').value;
+  const data={
+    name, type:document.getElementById('doc-type').value,
+    driver:document.getElementById('doc-driver').value,
+    status:document.getElementById('doc-status').value,
+    issueDate:document.getElementById('doc-issue').value,
+    expiry:document.getElementById('doc-expiry').value,
+    notes:document.getElementById('doc-notes').value,
+    addedBy:me?.name||'',
+  };
+  if(eid){ const i=db.documents.findIndex(d=>d.id===eid); if(i>=0) db.documents[i]={...db.documents[i],...data}; toast('Updated!'); }
+  else { db.documents.push({id:'DOC-'+String(db.docN++).padStart(3,'0'),...data}); toast('Document added!','win'); }
+  save(); closeModal('document'); render();
+}
+function deleteDocument(id){
+  if(!can.del()) return;
+  if(!confirm('Delete?')) return;
+  db.documents=db.documents.filter(d=>d.id!==id);
+  save(); render(); toast('Deleted');
+}
+async function saveUser(){
+  const name=(document.getElementById('u-name').value||'').trim();
+  const email=(document.getElementById('u-email').value||'').trim().toLowerCase();
+  const pass=document.getElementById('u-pass').value;
+  const role=document.getElementById('u-role').value;
+  const eid=document.getElementById('u-eid').value;
+  if(!name||!email){ toast('Name and email required','err'); return; }
+  if(!eid&&(!pass||pass.length<6)){ toast('Password must be at least 6 characters','err'); return; }
+  const key=eKey(email);
+  const access=[];
+  if(document.getElementById('u-access-revenue').checked) access.push('revenue');
+  if(document.getElementById('u-access-driverperf').checked) access.push('driver-performance');
+  if(document.getElementById('u-access-companyperf').checked) access.push('company-performance');
+
+  if(eid){
+    const u=users[eid];
+    if(!u){ toast('User not found','err'); return; }
+    u.name=name; u.email=email; u.role=role; u.access=access;
+    u.driverName=document.getElementById('u-driver').value;
+    u.phone=document.getElementById('u-phone').value;
+    if(pass&&pass.length>=6) u.password=pass;
+    if(eid!==key){ users[key]=u; delete users[eid]; }
+    toast('User updated!','win');
+  } else {
+    if(users[key]){ toast('That email is already registered','err'); return; }
+    users[key]={email,name,password:pass,role,
+      driverName:document.getElementById('u-driver').value,
+      phone:document.getElementById('u-phone').value,
+      access};
+    toast('✅ User added! They can now log in.','win');
+  }
+
+  saveUsers();
+  closeModal('user'); renderUsers();
+}
+function editUser(key){
+  const u=users[key]; if(!u) return;
+  populateSels();
+  document.getElementById('u-eid').value=key;
+  document.getElementById('user-m-title').textContent='Edit User';
+  document.getElementById('u-name').value=u.name||'';
+  document.getElementById('u-email').value=u.email||'';
+  document.getElementById('u-pass').value='';
+  document.getElementById('u-phone').value=u.phone||'';
+  document.getElementById('u-role').value=u.role||'driver';
+  document.getElementById('u-driver').value=u.driverName||'';
+  document.getElementById('u-access-revenue').checked=!!(u.access&&u.access.includes('revenue'));
+  document.getElementById('u-access-driverperf').checked=!!(u.access&&u.access.includes('driver-performance'));
+  document.getElementById('u-access-companyperf').checked=!!(u.access&&u.access.includes('company-performance'));
+  toggleUserRole();
+  document.getElementById('modal-user').classList.add('open');
+}
+function deleteUser(key){
+  if(!can.isAdmin()) return;
+  if(key==='admin_at_nfaith_com'){ toast('Cannot delete admin','err'); return; }
+  if(!confirm('Delete this user?')) return;
+  delete users[key]; saveUsers(); renderUsers(); toast('Deleted');
+}
+function regenCode(){
+  if(!can.isAdmin()) return;
+  db.regCode='NF'+Math.random().toString(36).substr(2,6).toUpperCase();
+  save(); renderUsers(); toast('New code generated!','win');
+}
+function changePassword(){
+  const op=document.getElementById('cp-old')?.value;
+  const np=document.getElementById('cp-new')?.value;
+  if(!op||!np){ toast('Fill both fields','err'); return; }
+  const key=eKey(me.email);
+  if(users[key]?.password!==op){ toast('Current password wrong','err'); return; }
+  if(np.length<6){ toast('New password too short','err'); return; }
+  users[key].password=np;
+  saveUsers(); toast('Password changed!','win');
+}
+
+// ═══════════════════════════════════════════
+// FUEL CALCULATOR
+// ═══════════════════════════════════════════
+function onFCTripChange(){
+  const wb=document.getElementById('fc-trip').value;
+  const trip=db.trips.find(t=>t.waybill===wb);
+  if(trip){
+    document.getElementById('fc-dist').value=trip.dist||'';
+    document.getElementById('fc-truck').value=trip.truck||'';
+  }
+  calcFuel();
+}
+function calcFuel(){
+  const dist=parseFloat(document.getElementById('fc-dist').value)||0;
+  const ppl=parseFloat(document.getElementById('fc-ppl').value)||0;
+  const actual=parseFloat(document.getElementById('fc-actual').value)||0;
+  const eff=db.fuelEfficiency||1.54;
+  const cons=1/eff;
+  const expected=parseFloat((dist*cons).toFixed(1));
+  const expectedCost=parseFloat((expected*ppl).toFixed(2));
+  const actualCost=parseFloat((actual*ppl).toFixed(2));
+  const variance=expected>0?((actual-expected)/expected*100):0;
+  const vColor=Math.abs(variance)<10?'var(--green)':Math.abs(variance)<20?'var(--orange)':'var(--red)';
+  document.getElementById('fc-results').innerHTML=`
+    <div style="display:grid;gap:8px;">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Expected consumption</span><strong>${expected} L</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Expected cost</span><strong>${fmtGHC(expectedCost)}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Actual cost</span><strong>${fmtGHC(actualCost)}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>Variance</span><strong style="color:${vColor}">${variance>0?'+':''}${variance.toFixed(1)}%</strong></div>
+    </div>`;
+}
+function saveFuelFromCalc(){
+  const wb=document.getElementById('fc-trip').value;
+  const truck=document.getElementById('fc-truck').value;
+  const dist=parseFloat(document.getElementById('fc-dist').value)||0;
+  const ppl=parseFloat(document.getElementById('fc-ppl').value)||0;
+  const actual=parseFloat(document.getElementById('fc-actual').value)||0;
+  const station=document.getElementById('fc-station').value;
+  if(!truck||!actual||!ppl){ toast('Fill truck, litres and price per litre','err'); return; }
+  const trip=db.trips.find(t=>t.waybill===wb);
+  const cost=parseFloat((actual*ppl).toFixed(2));
+  db.fuel.push({
+    id:'F-'+String(db.fuelN++).padStart(3,'0'),
+    truck, driver:trip?.driver||'',
+    type:'Fuel Refill', station, amount:actual, pricePerLitre:ppl, cost,
+    date:new Date().toISOString().split('T')[0],
+    linkedWaybill:wb||'', notes:'From Fuel Calculator',
+    enteredBy:me?.name||'',
+  });
+  save(); render(); toast('✅ Saved to Fuel Log!','win');
+}
+
+// ═══════════════════════════════════════════
+// MESSAGES
+// ═══════════════════════════════════════════
+let msgFilter='all';
+const AVCOLORS=['#1558a8','#0b7a52','#92400e','#5433a8','#0e7490','#b52b1e','#c96b0a'];
+function avColor(name){ let h=0;for(const c of(name||'X'))h=(h*31+c.charCodeAt(0))%7;return AVCOLORS[h]; }
+function canSeeMsg(m){
+  if(!me) return false;
+  if(m.to==='all'||m.from===me.email||me.role==='admin') return true;
+  return m.to===me.role;
+}
+function sysMsg(body, type='info', to='all'){
+  if(!db.messages) db.messages=[];
+  db.messages.unshift({
+    id:'m'+Date.now()+Math.random().toString(36).substr(2,4),
+    from:'system', fromName:'System', to, priority:type==='warn'?'urgent':'info',
+    body, type:'system', sysType:type,
+    date:new Date().toLocaleDateString('en-GB'),
+    time:new Date().toLocaleTimeString('en-GB'),
+    ts:new Date().toISOString(), readBy:[], replies:[]
+  });
+  save();
+}
+function sendMsg(){
+  const body=(document.getElementById('msg-body').value||'').trim();
+  if(!body){ toast('Write a message first','err'); return; }
+  if(!db.messages) db.messages=[];
+  db.messages.unshift({
+    id:'m'+Date.now(), from:me.email, fromName:me.name, fromRole:me.role,
+    to:document.getElementById('msg-to').value,
+    priority:document.getElementById('msg-priority').value,
+    body, type:'user',
+    date:new Date().toLocaleDateString('en-GB'),
+    time:new Date().toLocaleTimeString('en-GB'),
+    ts:new Date().toISOString(), readBy:[me.email], replies:[]
+  });
+  document.getElementById('msg-body').value='';
+  save(); renderMessages(); toast('Message sent','win');
+}
+function sendReply(msgId){
+  const inp=document.getElementById('reply-'+msgId); if(!inp) return;
+  const text=(inp.value||'').trim(); if(!text){ toast('Type a reply','err'); return; }
+  const msg=db.messages?.find(m=>m.id===msgId); if(!msg) return;
+  if(!msg.replies) msg.replies=[];
+  msg.replies.push({
+    from:me.email, fromName:me.name, fromRole:me.role, text,
+    date:new Date().toLocaleDateString('en-GB'), time:new Date().toLocaleTimeString('en-GB'),
+  });
+  if(!msg.readBy) msg.readBy=[];
+  if(!msg.readBy.includes(me.email)) msg.readBy.push(me.email);
+  inp.value='';
+  save(); renderMessages();
+}
+function markAllRead(){
+  (db.messages||[]).forEach(m=>{ if(canSeeMsg(m)&&!m.readBy) m.readBy=[]; if(canSeeMsg(m)&&!m.readBy.includes(me.email)) m.readBy.push(me.email); });
+  save(); renderMessages();
+}
+function markRead(id){
+  const m=(db.messages||[]).find(x=>x.id===id); if(!m) return;
+  if(!m.readBy) m.readBy=[];
+  if(!m.readBy.includes(me.email)){ m.readBy.push(me.email); save(); }
+}
+function deleteMsg(id){
+  if(!can.del()) return;
+  db.messages=(db.messages||[]).filter(m=>m.id!==id);
+  save(); renderMessages();
+}
+function setMsgFilter(f){
+  msgFilter=f;
+  ['all','unread','urgent','system'].forEach(k=>{
+    const el=document.getElementById('mf-'+k);
+    if(el){ el.className='btn bsm'+(k===f?' bp':' bg'); }
+  });
+  renderMessages();
+}
+function renderMessages(){
+  const el=document.getElementById('msg-list'); if(!el) return;
+  if(!db.messages) db.messages=[];
+  const visible=(db.messages||[]).filter(m=>{
+    if(!canSeeMsg(m)) return false;
+    if(msgFilter==='unread') return !m.readBy?.includes(me.email);
+    if(msgFilter==='urgent') return m.priority==='urgent';
+    if(msgFilter==='system') return m.type==='system';
+    return true;
+  });
+  const unread=(db.messages||[]).filter(m=>canSeeMsg(m)&&!m.readBy?.includes(me.email)).length;
+  const badge=document.getElementById('sb-msg-badge');
+  if(badge){ badge.textContent=unread; badge.style.display=unread>0?'':'none'; }
+  const sub=document.getElementById('msg-sub');
+  if(sub) sub.textContent=(db.messages||[]).filter(m=>canSeeMsg(m)).length+' messages · '+unread+' unread';
+  if(!visible.length){ el.innerHTML=`<div class="empty"><div class="ei">💬</div><p>No messages</p></div>`; return; }
+  const toLabel={all:'📢 Everyone',admin:'👑 Admins',manager:'📋 Managers',driver:'🚛 Drivers',office:'🏢 Office'};
+  el.innerHTML=visible.map(m=>{
+    const isUnread=!m.readBy?.includes(me.email);
+    const isMine=m.from===me.email;
+    const cls='msg-item'+(m.type==='system'?' sys':'')+(m.sysType==='warn'?' warn':m.sysType==='ok'?' ok':'');
+    const av=(m.fromName||'S').split(' ').map(x=>x[0]).join('').substr(0,2).toUpperCase();
+    const replies=(m.replies||[]).map(r=>`
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <div class="msg-av" style="background:${avColor(r.fromName)};width:22px;height:22px;font-size:9px;">${(r.fromName||'?').split(' ').map(x=>x[0]).join('').substr(0,2).toUpperCase()}</div>
+        <div class="msg-reply-bubble">
+          <div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:2px;">${r.fromName} <span style="color:var(--muted);font-weight:400">${r.fromRole||''}</span></div>
+          <div style="font-size:12px;">${r.text}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${r.date} ${r.time}</div>
+        </div>
+      </div>`).join('');
+    return `<div class="${cls}" onclick="markRead('${m.id}')">
+      <div class="msg-meta">
+        <div class="msg-av" style="background:${m.from==='system'?'#1558a8':avColor(m.fromName)}">${av}</div>
+        <strong style="font-size:13px">${m.fromName||'System'}</strong>
+        ${m.fromRole&&m.from!=='system'?`<span style="font-size:10px;color:var(--muted)">${m.fromRole}</span>`:''}
+        ${m.to!=='all'?`<span class="badge bg-b" style="font-size:9px">→ ${toLabel[m.to]||m.to}</span>`:''}
+        ${m.priority==='urgent'?`<span class="badge bg-r" style="font-size:9px">🔴 URGENT</span>`:''}
+        ${isUnread?`<span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;"></span>`:''}
+        <span style="margin-left:auto;font-size:10px;color:var(--muted)">${m.date} ${m.time}</span>
+        ${(isMine||can.isAdmin())?`<button class="btn bd bsm" style="padding:2px 7px;font-size:10px;" onclick="event.stopPropagation();deleteMsg('${m.id}')">✕</button>`:''}
+      </div>
+      <div class="msg-body">${m.body}</div>
+      ${replies?`<div class="msg-replies">${replies}</div>`:''}
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+        <input id="reply-${m.id}" type="text" placeholder="Reply…"
+          style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12px;font-family:var(--fb);outline:none;"
+          onkeydown="if(event.key==='Enter')sendReply('${m.id}')">
+        <button class="btn bp bsm" onclick="sendReply('${m.id}')">Reply</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// ACTIVITY LOG
+// ═══════════════════════════════════════════
+function logActivity(action){
+  if(!me) return;
+  if(!db.activityLog) db.activityLog=[];
+  const n=new Date();
+  const duration=(action==='Logged out'&&me.loginTime)?formatDur(Date.now()-me.loginTime):null;
+  db.activityLog.unshift({
+    name:me.name, email:me.email, role:me.role, action,
+    date:n.toLocaleDateString('en-GB'), time:n.toLocaleTimeString('en-GB'),
+    duration:duration||'—',
+  });
+  if(db.activityLog.length>200) db.activityLog=db.activityLog.slice(0,200);
+  save();
+}
+function formatDur(ms){
+  const s=Math.floor(ms/1000);
+  if(s<60) return s+'s';
+  const m=Math.floor(s/60); if(m<60) return m+'m '+(s%60)+'s';
+  return Math.floor(m/60)+'h '+(m%60)+'m';
+}
+function clearActivity(){
+  if(!can.isAdmin()) return;
+  if(!confirm('Clear activity log?')) return;
+  db.activityLog=[]; save(); renderUsers();
+}
+
+// ═══════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════
+function render(){
+  renderDashboard(); renderTrips(); renderWaybills(); renderReverse();
+  renderFuel(); renderMaintenance(); renderTrucks(); renderDrivers();
+  renderAllowances(); renderCargo(); renderDispatch(); renderSafety();
+  renderDocuments(); renderRevenue(); renderCompanyPerf();
+  renderDriverPerf(); renderHistory(); renderTripProgress();
+  updateMsgBadge();
+}
+function updateMsgBadge(){
+  const unread=(db.messages||[]).filter(m=>canSeeMsg(m)&&!m.readBy?.includes(me.email)).length;
+  const badge=document.getElementById('sb-msg-badge');
+  if(badge){ badge.textContent=unread; badge.style.display=unread>0?'':'none'; }
+}
+function renderDashboard(){
+  const t=db.trips||[];
+  const active=t.filter(x=>['In Transit','Departed','Loading','At Factory'].includes(x.status)).length;
+  const delivered=t.filter(x=>x.status==='Delivered').length;
+  const delayed=t.filter(x=>x.status==='Delayed').length;
+  const totalRev=t.reduce((s,x)=>s+Number(x.revenue||0),0);
+  document.getElementById('ds-trips').textContent=t.length;
+  document.getElementById('ds-active').textContent=active;
+  document.getElementById('ds-delivered').textContent=delivered;
+  document.getElementById('ds-delayed').textContent=delayed;
+  document.getElementById('ds-drivers').textContent=(db.drivers||[]).length;
+  document.getElementById('ds-revenue').textContent=fmtGHC(totalRev);
+  const today=new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const dd=document.getElementById('dash-date');
+  if(dd) dd.textContent=today;
+  const tbody=document.getElementById('dash-tbody');
+  const recent=[...t].reverse().slice(0,8);
+  tbody.innerHTML=recent.length?recent.map(x=>`<tr>
+    <td><strong style="color:var(--accent)">${x.waybill}</strong></td>
+    <td>${x.driver}</td><td style="font-size:12px">${x.truck}</td>
+    <td style="font-size:12px">${x.origin||'—'}→${x.dest}</td>
+    <td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.cargo}</td>
+    <td>${sb(x.status)}</td><td style="font-size:12px">${x.date||'—'}</td>
+  </tr>`).join(''):`<tr><td colspan="7"><div class="empty"><div class="ei">🚛</div><p>No trips yet</p></div></td></tr>`;
+}
+function renderTrips(){
+  const trips=can.isDriver()?db.trips.filter(t=>t.driver===me.driverName):db.trips;
+  const tbody=document.getElementById('trips-tbody');
+  tbody.innerHTML=[...trips].reverse().map(t=>`<tr>
+    <td><strong style="color:var(--accent)">${t.waybill}</strong><div style="font-size:9px;color:var(--muted)">N-Faith</div></td>
+    <td>${t.driver}</td>
+    <td style="font-size:12px">${t.truck}</td>
+    <td style="font-size:12px">${t.pickupCompany||'—'}</td>
+    <td style="font-size:12px">${t.origin||'—'}→${t.dest}</td>
+    <td style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.cargo}</td>
+    <td style="font-family:monospace;font-size:11px;font-weight:700">${t.companyWaybill||'—'}</td>
+    <td style="font-size:12px">${t.qty||'—'}</td>
+    <td style="font-weight:700;color:var(--green)">${t.revenue?fmtGHC(t.revenue):'—'}</td>
+    <td>${sb(t.status)}</td>
+    <td style="font-size:12px">${t.date||'—'}</td>
+    <td style="display:flex;gap:3px;flex-wrap:wrap;">
+      ${can.edit()?`<button class="btn be bsm" onclick="editTrip('${t.id}')">✏️</button>`:''}
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteTrip('${t.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="12"><div class="empty"><div class="ei">🚛</div><p>No trips yet</p></div></td></tr>`;
+}
+// ═══════════════════════════════════════════
+// COMPANY WAYBILL UPLOAD
+// ═══════════════════════════════════════════
+let _wbFileData=null;
+function openWbUpload(tripId, waybill){
+  _wbFileData=null;
+  document.getElementById('wb-upload-trip-id').value=tripId;
+  document.getElementById('wb-upload-sub').textContent=`Trip: ${waybill}`;
+  const t=(db.trips||[]).find(x=>x.id===tripId);
+  document.getElementById('wb-upload-number').value=t?t.companyWaybill||'':'';
+  document.getElementById('wb-preview-wrap').style.display='none';
+  document.getElementById('wb-drop-zone').style.display='block';
+  document.getElementById('wb-file-input').value='';
+  openModal('wb-upload');
+}
+function wbDragOver(e){ e.preventDefault(); document.getElementById('wb-drop-zone').style.borderColor='var(--accent)'; }
+function wbDragLeave(e){ document.getElementById('wb-drop-zone').style.borderColor='var(--border)'; }
+function wbDrop(e){
+  e.preventDefault();
+  wbDragLeave(e);
+  const file=e.dataTransfer?.files?.[0]; if(file) wbProcessFile(file);
+}
+function wbFileSelected(input){ if(input.files?.[0]) wbProcessFile(input.files[0]); }
+function wbProcessFile(file){
+  if(file.size>5*1024*1024){ toast('File too large — max 5MB','err'); return; }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    _wbFileData={name:file.name,type:file.type,size:file.size,data:e.target.result};
+    const ico=file.type.includes('pdf')?'📄':file.type.includes('image')?'🖼️':'📎';
+    const sz=(file.size/1024).toFixed(0)+'KB';
+    document.getElementById('wb-preview-ico').textContent=ico;
+    document.getElementById('wb-preview-name').textContent=file.name;
+    document.getElementById('wb-preview-size').textContent=sz;
+    document.getElementById('wb-preview-wrap').style.display='block';
+    document.getElementById('wb-drop-zone').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+function wbClearFile(){
+  _wbFileData=null;
+  document.getElementById('wb-preview-wrap').style.display='none';
+  document.getElementById('wb-drop-zone').style.display='block';
+  document.getElementById('wb-file-input').value='';
+}
+function saveWbUpload(){
+  const id=document.getElementById('wb-upload-trip-id').value;
+  const num=(document.getElementById('wb-upload-number').value||'').trim().toUpperCase();
+  if(!num&&!_wbFileData){ toast('Enter a waybill number or attach a file','err'); return; }
+  const t=(db.trips||[]).find(x=>x.id===id); if(!t) return;
+  if(num) t.companyWaybill=num;
+  if(_wbFileData){ t.wbFileName=_wbFileData.name; t.wbFileData=_wbFileData.data; t.wbFileType=_wbFileData.type; }
+  save(); closeModal('wb-upload'); renderWaybills(); renderTrips();
+  toast('✅ Company waybill saved!','win');
+}
+function wbViewFile(tripId){
+  const t=(db.trips||[]).find(x=>x.id===tripId);
+  if(!t||!t.wbFileData){ toast('No file attached','err'); return; }
+  const win=window.open();
+  if(t.wbFileType&&t.wbFileType.includes('image')){
+    win.document.write(`<img src="${t.wbFileData}" style="max-width:100%;"/>`);
+  } else {
+    const a=win.document.createElement('a');
+    a.href=t.wbFileData; a.download=t.wbFileName||'waybill'; a.click();
+    win.close();
+  }
+}
+
+function renderWaybills(){
+  const trips=can.isDriver()?db.trips.filter(t=>t.driver===me.driverName):db.trips;
+  document.getElementById('wb-tbody').innerHTML=[...trips].reverse().map(t=>{
+    const hasNum=!!(t.companyWaybill);
+    const hasFile=!!(t.wbFileName);
+    const numCell=hasNum
+      ?`<span style="font-family:monospace;font-size:12px;font-weight:700;color:var(--accent)">${t.companyWaybill}</span>`
+      :`<span style="color:var(--muted);font-size:12px;font-style:italic;">Not entered</span>`;
+    const fileCell=hasFile
+      ?`<span class="badge bg-g" style="cursor:pointer;" onclick="wbViewFile('${t.id}')" title="${t.wbFileName}">📄 ${t.wbFileName.length>14?t.wbFileName.slice(0,14)+'…':t.wbFileName}</span>`
+      :`<span class="badge bg-o">No file</span>`;
+    const uploadBtn=can.edit()
+      ?`<button class="btn bteal bsm" onclick="openWbUpload('${t.id}','${t.waybill}')" title="Attach company waybill">📎 ${hasNum||hasFile?'Update':'Attach'}</button>`:'';
+    return `<tr>
+      <td><strong style="color:var(--accent);font-family:var(--fh);font-size:15px">${t.waybill}</strong><div style="font-size:9px;color:var(--muted)">N-Faith</div></td>
+      <td>${numCell}</td>
+      <td>${fileCell}</td>
+      <td>${t.driver}</td>
+      <td style="font-size:12px">${t.truck}</td>
+      <td style="font-size:12px">${t.pickupCompany||'—'}</td>
+      <td style="font-size:12px">${t.origin||'—'}→${t.dest}</td>
+      <td style="font-size:12px">${t.cargo}</td>
+      <td style="font-size:12px">${t.client||'—'}</td>
+      <td style="font-weight:700;color:var(--green)">${t.revenue?fmtGHC(t.revenue):'—'}</td>
+      <td style="font-size:12px">${t.date||'—'}</td>
+      <td>${sb(t.status)}</td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap;">
+        ${uploadBtn}
+        <button class="btn bwb bsm" onclick="editTrip('${t.id}')">✏️ View</button>
+      </td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="13"><div class="empty"><div class="ei">📄</div><p>No waybills</p></div></td></tr>`;
+}
+function renderReverse(){
+  const rl=(db.trips||[]).filter(t=>t.reverseLoad==='yes');
+  document.getElementById('rl-tbody').innerHTML=rl.map(t=>`<tr>
+    <td><strong style="color:var(--accent)">${t.waybill}</strong></td>
+    <td>${t.driver}</td>
+    <td style="font-size:12px">${t.origin||'—'}→${t.dest}</td>
+    <td style="font-size:12px">${t.rvPickup||'—'}</td>
+    <td style="font-size:12px">${t.rvDest||'—'}</td>
+    <td style="font-size:12px">${t.rvCargo||'—'}</td>
+    <td>${sb(t.rvStatus||'Pending')}</td>
+  </tr>`).join('')||`<tr><td colspan="7"><div class="empty"><div class="ei">🔄</div><p>No reverse loads</p></div></td></tr>`;
+}
+function renderFuel(){
+  const fuel=(db.fuel||[]).filter(f=>f.type==='Fuel Refill');
+  document.getElementById('fuel-tbody').innerHTML=[...fuel].reverse().map(f=>`<tr>
+    <td><strong>${f.truck}</strong></td><td>${f.driver||'—'}</td>
+    <td style="font-size:12px">${f.station||'—'}</td>
+    <td>${f.amount||'—'}L</td>
+    <td>${f.pricePerLitre?'GH₵'+f.pricePerLitre:'—'}</td>
+    <td style="font-weight:700;color:var(--accent)">GH₵${Number(f.cost||0).toLocaleString()}</td>
+    <td style="font-size:12px">${f.date||'—'}</td>
+    <td style="font-size:12px;color:var(--accent)">${f.linkedWaybill||'—'}</td>
+    <td style="display:flex;gap:3px">
+      ${can.edit()?`<button class="btn be bsm" onclick="editFuel('${f.id}')">✏️</button>`:''}
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteFuel('${f.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="9"><div class="empty"><div class="ei">⛽</div><p>No fuel entries</p></div></td></tr>`;
+}
+function renderMaintenance(){
+  const maint=(db.fuel||[]).filter(f=>f.type!=='Fuel Refill');
+  document.getElementById('maint-tbody').innerHTML=[...maint].reverse().map(f=>`<tr>
+    <td><strong>${f.truck}</strong></td><td>${f.driver||'—'}</td>
+    <td><span class="badge bg-p">${f.type}</span></td>
+    <td style="font-weight:700;color:var(--gold)">GH₵${Number(f.cost||0).toLocaleString()}</td>
+    <td style="font-size:12px">${f.date||'—'}</td>
+    <td style="font-size:12px;color:var(--muted)">${f.notes||'—'}</td>
+    <td style="display:flex;gap:3px">
+      ${can.edit()?`<button class="btn be bsm" onclick="editFuel('${f.id}')">✏️</button>`:''}
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteFuel('${f.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="7"><div class="empty"><div class="ei">🔩</div><p>No maintenance entries</p></div></td></tr>`;
+}
+function renderTrucks(){
+  const drivers=db.drivers||[];
+  document.getElementById('trucks-tbody').innerHTML=drivers.map(d=>{
+    const trips=(db.trips||[]).filter(t=>t.truck===d.truck).length;
+    return`<tr>
+      <td><strong>${d.truck}</strong></td>
+      <td style="font-family:monospace;font-size:11px;font-weight:700;color:var(--accent)">${d.plate||'—'}</td>
+      <td>${d.name}</td>
+      <td style="font-size:12px">${d.phone||'—'}</td>
+      <td>${sb(d.status||'Available')}</td>
+      <td><span class="badge bg-b">${trips}</span></td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="6"><div class="empty"><div class="ei">🔧</div><p>No trucks</p></div></td></tr>`;
+}
+function renderDrivers(){
+  const tbody=document.getElementById('drivers-tbody');
+  tbody.innerHTML=(db.drivers||[]).map(d=>{
+    const exp=d.licenseExpiry&&new Date(d.licenseExpiry)<new Date();
+    const trips=(db.trips||[]).filter(t=>t.driver===d.name).length;
+    return`<tr>
+      <td><strong>${d.name}</strong></td>
+      <td>${d.truck}</td>
+      <td style="font-family:monospace;font-size:11px;font-weight:700;color:var(--accent)">${d.plate||'—'}</td>
+      <td style="font-size:12px">${d.phone||'—'}</td>
+      <td style="font-family:monospace;font-size:11px">${d.license||'—'}</td>
+      <td style="font-size:12px;color:${exp?'var(--red)':'var(--green)'}">${exp?'⚠️ ':''} ${d.licenseExpiry||'—'}</td>
+      <td>${sb(d.status||'Available')}</td>
+      <td><span class="badge bg-b">${trips}</span></td>
+      <td style="display:flex;gap:3px">
+        ${can.edit()?`<button class="btn be bsm" onclick="editDriver('${d.id}')">✏️</button>`:''}
+        ${can.del()?`<button class="btn bd bsm" onclick="deleteDriver('${d.id}')">✕</button>`:''}
+      </td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="9"><div class="empty"><div class="ei">👤</div><p>No drivers yet</p></div></td></tr>`;
+}
+function renderDriverPerf(){
+  const tbody=document.getElementById('dperf-tbody');
+  const data=(db.drivers||[]).map(d=>{
+    const trips=(db.trips||[]).filter(t=>t.driver===d.name);
+    const delivered=trips.filter(t=>t.status==='Delivered').length;
+    const delayed=trips.filter(t=>t.status==='Delayed').length;
+    const rev=trips.reduce((s,t)=>s+Number(t.revenue||0),0);
+    const rate=trips.length>0?Math.round(delivered/trips.length*100):0;
+    return{name:d.name,trips:trips.length,delivered,delayed,rev,rate};
+  }).sort((a,b)=>b.rate-a.rate||b.rev-a.rev);
+  tbody.innerHTML=data.map((d,i)=>`<tr>
+    <td><span style="font-family:var(--fh);font-size:18px">${['🥇','🥈','🥉'][i]||i+1}</span></td>
+    <td><strong>${d.name}</strong></td>
+    <td>${d.trips}</td>
+    <td style="color:var(--green);font-weight:700">${d.delivered}</td>
+    <td style="color:var(--red)">${d.delayed}</td>
+    <td style="font-weight:700;color:var(--accent)">${fmtGHC(d.rev)}</td>
+    <td><span class="badge ${d.rate>=80?'bg-g':d.rate>=60?'bg-o':'bg-r'}">${d.rate}%</span></td>
+  </tr>`).join('')||`<tr><td colspan="7"><div class="empty"><div class="ei">🏅</div><p>No driver data</p></div></td></tr>`;
+}
+function renderAllowances(){
+  document.getElementById('allow-tbody').innerHTML=[...(db.allowances||[])].reverse().map(a=>`<tr>
+    <td style="font-size:12px">${a.date||'—'}</td>
+    <td><strong>${a.driver}</strong></td>
+    <td style="font-size:12px">${a.truck||'—'}</td>
+    <td style="font-size:12px;color:var(--accent)">${a.waybill||'—'}</td>
+    <td>GH₵${Number(a.tripAllowance||0).toLocaleString()}</td>
+    <td>GH₵${Number(a.policeCheckpoint||0).toLocaleString()}</td>
+    <td>GH₵${Number(a.other||0).toLocaleString()}</td>
+    <td style="font-weight:700;color:var(--green)">GH₵${Number(a.total||0).toLocaleString()}</td>
+    <td style="font-size:12px">${a.paidBy||'—'}</td>
+    <td style="display:flex;gap:3px">
+      ${can.edit()?`<button class="btn be bsm" onclick="editAllowance('${a.id}')">✏️</button>`:''}
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteAllowance('${a.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="10"><div class="empty"><div class="ei">💰</div><p>No allowances</p></div></td></tr>`;
+}
+function renderCargo(){
+  document.getElementById('cargo-tbody').innerHTML=[...(db.cargo||[])].reverse().map(c=>`<tr>
+    <td><strong>${c.id}</strong></td>
+    <td style="font-family:monospace;font-size:11px;font-weight:700;color:var(--accent)">${c.companyWaybill||'—'}</td>
+    <td>${c.desc}</td>
+    <td style="font-size:12px">${c.client||'—'}</td>
+    <td style="font-size:12px">${c.pickupCompany||'—'}</td>
+    <td style="font-size:12px">${c.qty||'—'}</td>
+    <td style="font-size:12px">${c.unitPrice?fmtGHC(c.unitPrice):'—'}</td>
+    <td style="font-weight:700;color:var(--green)">${c.amount?fmtGHC(c.amount):'—'}</td>
+    <td style="font-size:12px">${Number(c.weight||0).toLocaleString()} kg</td>
+    <td style="font-size:12px;color:var(--accent);font-weight:600">${c.trip||'—'}</td>
+    <td>${sb(c.status||'Pending')}</td>
+    <td style="display:flex;gap:3px">
+      ${can.edit()?`<button class="btn be bsm" onclick="editCargo('${c.id}')">✏️</button>`:''}
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteCargo('${c.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="12"><div class="empty"><div class="ei">📦</div><p>No cargo entries</p></div></td></tr>`;
+}
+function renderDispatch(){
+  document.getElementById('dispatch-tbody').innerHTML=[...(db.dispatches||[])].reverse().map(d=>`<tr>
+    <td><strong>${d.id}</strong></td>
+    <td style="font-size:12px">${d.date||'—'}</td>
+    <td>${d.client}</td>
+    <td style="font-size:12px;color:var(--accent)">${d.waybill||'—'}</td>
+    <td>${sb(d.priority||'Normal')}</td>
+    <td style="font-size:12px">${d.manager||'—'}</td>
+    <td>${sb(d.status||'Pending')}</td>
+    <td style="display:flex;gap:3px">
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteDispatch('${d.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="8"><div class="empty"><div class="ei">📋</div><p>No dispatch orders</p></div></td></tr>`;
+}
+function renderSafety(){
+  document.getElementById('safety-tbody').innerHTML=[...(db.safety||[])].reverse().map(s=>`<tr>
+    <td style="font-size:12px">${s.date||'—'}</td>
+    <td>${s.driver||'—'}</td>
+    <td style="font-size:12px">${s.truck||'—'}</td>
+    <td><span class="badge bg-b">${s.type||'—'}</span></td>
+    <td style="font-size:12px;max-width:180px">${s.desc||'—'}</td>
+    <td>${sb(s.severity||'Low')}</td>
+    <td style="display:flex;gap:3px">
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteSafety('${s.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="7"><div class="empty"><div class="ei">🦺</div><p>No incidents</p></div></td></tr>`;
+}
+function renderDocuments(){
+  document.getElementById('docs-tbody').innerHTML=[...(db.documents||[])].reverse().map(d=>`<tr>
+    <td><strong>${d.name}</strong></td>
+    <td><span class="badge bg-b">${d.type||'—'}</span></td>
+    <td style="font-size:12px">${d.driver||'—'}</td>
+    <td style="font-size:12px">${d.issueDate||'—'}</td>
+    <td style="font-size:12px;color:${d.status==='Expired'?'var(--red)':d.status==='Expiring Soon'?'var(--orange)':'var(--green)'}">${d.expiry||'—'}</td>
+    <td>${sb(d.status||'Valid')}</td>
+    <td style="display:flex;gap:3px">
+      ${can.del()?`<button class="btn bd bsm" onclick="deleteDocument('${d.id}')">✕</button>`:''}
+    </td>
+  </tr>`).join('')||`<tr><td colspan="7"><div class="empty"><div class="ei">🗂️</div><p>No documents</p></div></td></tr>`;
+}
+// ═══════════════════════════════════════════
+// TRIP PROGRESS
+// ═══════════════════════════════════════════
+const TP_STAGES = ['Scheduled','Departed','In Line','Waiting to Load','In Transit','Waiting to Offload','Delivered'];
+const TP_COLORS = {
+  'Scheduled':'#378ADD','Departed':'#639922','In Line':'#7F77DD',
+  'Waiting to Load':'#D4537E','In Transit':'#BA7517',
+  'Waiting to Offload':'#0F6E56','Delivered':'#1D9E75'
+};
+const TP_DELAY_COLOR='#E24B4A';
+const TP_WARN_COLOR='#EF9F27';
+const TP_ALERT_MS=2*60*60*1000;
+
+function tpFmt(ts){ return ts?new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):null; }
+function tpElapsed(ts){ return ts?Math.floor((Date.now()-ts)/60000):0; }
+function tpIsPotDelay(t){ if(t.tpStatus==='Delivered')return false; return t.tpMarkedAt&&(Date.now()-t.tpMarkedAt)>=TP_ALERT_MS; }
+
+function tpBuildBar(t){
+  const hist=t.tpHistory||[];
+  if(!hist.length) return `<div class="tp-bar-seg" style="flex:${TP_STAGES.length};background:var(--s2);"></div>`;
+  const segs=hist.map(s=>{
+    const isCur=t.tpStatus===s;
+    const col=isCur&&t.tpDelayedAt?TP_DELAY_COLOR:isCur&&tpIsPotDelay(t)?TP_WARN_COLOR:TP_COLORS[s];
+    return `<div class="tp-bar-seg" style="flex:1;background:${col};"></div>`;
+  }).join('');
+  const rem=TP_STAGES.length-hist.length;
+  return segs+(rem>0?`<div class="tp-bar-seg" style="flex:${rem};background:var(--s2);"></div>`:'');
+}
+
+function tpCheckNotifications(){
+  const alerts=[];
+  (db.trips||[]).forEach(t=>{
+    if(tpIsPotDelay(t)&&!t.tpDelayedAt){
+      alerts.push(`${t.waybill} (${t.driver}) — stuck on "${t.tpStatus}" for ${tpElapsed(t.tpMarkedAt)} min`);
+      if(!t.tpNotified){
+        t.tpNotified=true;
+        if('Notification' in window&&Notification.permission==='granted'){
+          new Notification('FreightOps — Potential delay',{body:`${t.waybill} has not moved from "${t.tpStatus}" in 2 hours.`});
+        }
+        const badge=document.getElementById('sb-prog-badge');
+        if(badge){ badge.style.display=''; badge.textContent=alerts.length; }
+      }
+    } else { t.tpNotified=false; }
+  });
+  const banner=document.getElementById('tp-notif-banner');
+  const items=document.getElementById('tp-notif-items');
+  if(banner&&items){
+    items.innerHTML=alerts.map(a=>`<div class="tp-notif-item">&#9679; ${a}</div>`).join('');
+    banner.classList.toggle('show',alerts.length>0);
+  }
+  const badge=document.getElementById('sb-prog-badge');
+  if(badge){ if(alerts.length){badge.style.display='';badge.textContent=alerts.length;}else{badge.style.display='none';} }
+}
+
+function tpDrawTrail(canvasId, pts){
+  const canvas=document.getElementById(canvasId); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  if(!pts||pts.length<1) return;
+  const lats=pts.map(p=>p.lat), lngs=pts.map(p=>p.lng);
+  const minLat=Math.min(...lats), maxLat=Math.max(...lats);
+  const minLng=Math.min(...lngs), maxLng=Math.max(...lngs);
+  const pad=30;
+  const scaleX=pts.length<2?1:(W-pad*2)/(maxLng-minLng||0.01);
+  const scaleY=pts.length<2?1:(H-pad*2)/(maxLat-minLat||0.01);
+  const toX=lng=>pts.length<2?W/2:pad+(lng-minLng)*scaleX;
+  const toY=lat=>pts.length<2?H/2:H-pad-(lat-minLat)*scaleY;
+  if(pts.length>1){
+    ctx.beginPath();
+    ctx.strokeStyle='#1d72d1';
+    ctx.lineWidth=2.5;
+    ctx.lineJoin='round';
+    ctx.lineCap='round';
+    pts.forEach((p,i)=>i===0?ctx.moveTo(toX(p.lng),toY(p.lat)):ctx.lineTo(toX(p.lng),toY(p.lat)));
+    ctx.stroke();
+  }
+  pts.forEach((p,i)=>{
+    const x=toX(p.lng), y=toY(p.lat);
+    const isLast=i===pts.length-1;
+    ctx.beginPath();
+    ctx.arc(x,y,isLast?7:4,0,Math.PI*2);
+    ctx.fillStyle=isLast?'#b52b1e':i===0?'#0b7a52':'#1d72d1';
+    ctx.fill();
+    ctx.strokeStyle='#fff';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+    if(isLast){
+      ctx.beginPath();
+      ctx.arc(x,y,12,0,Math.PI*2);
+      ctx.strokeStyle='rgba(181,43,30,0.3)';
+      ctx.lineWidth=2;
+      ctx.stroke();
+    }
+  });
+}
+
+function tpLocRow(t){
+  const pts=t.tpLocTrail||[];
+  const hasLoc=pts.length>0;
+  const last=hasLoc?pts[pts.length-1]:null;
+  const driverPhone=tpGetDriverPhone(t.driver);
+  const canvasId='tp-canvas-'+t.id;
+  const mapHtml=hasLoc?`
+    <div class="tp-map-canvas has-pts">
+      <canvas id="${canvasId}" style="width:100%;height:160px;display:block;"></canvas>
+    </div>
+    <div class="tp-loc-info">
+      <div class="tp-loc-icon has-loc">📍</div>
+      <div class="tp-loc-text">
+        <div class="tp-loc-name">${last.name||'Location recorded'}</div>
+        <div class="tp-loc-time">Shared ${tpFmt(last.at)||'—'} · ${last.notes||''}</div>
+        <div class="tp-loc-coords">${Number(last.lat).toFixed(4)}° N, ${Number(last.lng).toFixed(4)}° W</div>
+      </div>
+      <div class="tp-trail-badge"><span class="tp-trail-dot"></span>${pts.length} point${pts.length!==1?'s':''}</div>
+    </div>
+    ${pts.length>1?`<div class="tp-loc-hist">Trail: ${pts.map(p=>p.name||'—').join(' → ')}</div>`:''}`
+  :`<div class="tp-loc-info">
+      <div class="tp-loc-icon">📍</div>
+      <div class="tp-loc-text"><div class="tp-loc-none">No location shared yet</div></div>
+    </div>`;
+  const waBtn=driverPhone
+    ?`<button class="tp-wa-btn" onclick="tpRequestWA('${t.id}')">💬 Request via WhatsApp</button>`
+    :`<button class="tp-wa-btn" style="opacity:.5;cursor:not-allowed;" title="No phone number saved">💬 No phone on file</button>`;
+  const mapBtn=hasLoc?`<button class="tp-map-btn" onclick="tpOpenMap('${t.id}')">🗺️ Open in Maps</button>`:'';
+  const logBtn=`<button class="tp-log-btn" onclick="tpOpenLogModal('${t.id}')">📍 Log location</button>`;
+  setTimeout(()=>{ if(hasLoc) tpDrawTrail(canvasId,pts); },50);
+  return `<div class="tp-loc-box">${mapHtml}</div><div class="tp-btn-row">${waBtn}${logBtn}${mapBtn}</div>`;
+}
+
+function tpGetDriverPhone(driverName){
+  const d=(db.drivers||[]).find(x=>x.name===driverName);
+  return d?d.phone||'':'';
+}
+
+function tpRequestWA(id){
+  const t=(db.trips||[]).find(x=>x.id===id); if(!t) return;
+  const phone=tpGetDriverPhone(t.driver);
+  if(!phone){ toast('No phone number saved for this driver','err'); return; }
+  const clean=phone.replace(/[\s\-\(\)]/g,'').replace(/^0/,'233');
+  const msg=encodeURIComponent(`Hi ${t.driver}, please share your current location for trip ${t.waybill} (${t.origin||''}→${t.dest}). Tap the paperclip icon → Location → Share Current Location. Thank you — N-Faith FreightOps`);
+  window.open(`https://wa.me/${clean}?text=${msg}`,'_blank');
+}
+
+function tpOpenMap(id){
+  const t=(db.trips||[]).find(x=>x.id===id); if(!t) return;
+  const pts=t.tpLocTrail||[]; if(!pts.length) return;
+  const last=pts[pts.length-1];
+  window.open(`https://www.google.com/maps?q=${last.lat},${last.lng}`,'_blank');
+}
+
+function tpOpenLogModal(id){
+  document.getElementById('tp-log-trip-id').value=id;
+  document.getElementById('tp-log-name').value='';
+  document.getElementById('tp-log-lat').value='';
+  document.getElementById('tp-log-lng').value='';
+  document.getElementById('tp-log-notes').value='';
+  document.getElementById('tp-log-modal').classList.add('open');
+}
+function tpCloseLogModal(){
+  document.getElementById('tp-log-modal').classList.remove('open');
+}
+function tpSaveLocation(){
+  const id=document.getElementById('tp-log-trip-id').value;
+  const name=(document.getElementById('tp-log-name').value||'').trim();
+  const lat=parseFloat(document.getElementById('tp-log-lat').value);
+  const lng=parseFloat(document.getElementById('tp-log-lng').value);
+  const notes=(document.getElementById('tp-log-notes').value||'').trim();
+  if(!name){ toast('Enter a place name','err'); return; }
+  if(isNaN(lat)||isNaN(lng)){ toast('Enter valid coordinates','err'); return; }
+  const t=(db.trips||[]).find(x=>x.id===id); if(!t) return;
+  if(!t.tpLocTrail) t.tpLocTrail=[];
+  t.tpLocTrail.push({lat,lng,name,notes,at:Date.now()});
+  t.tpLat=lat; t.tpLng=lng; t.tpLocName=name; t.tpLocAt=Date.now();
+  save(); tpCloseLogModal(); renderTripProgress();
+  toast('📍 Location saved!','win');
+}
+
+function renderTripProgress(){
+  tpCheckNotifications();
+  const legEl=document.getElementById('tp-legend');
+  if(legEl&&!legEl.innerHTML){
+    legEl.innerHTML=TP_STAGES.map(s=>`<span class="tp-leg"><span class="tp-leg-dot" style="background:${TP_COLORS[s]}"></span>${s}</span>`).join('')
+      +`<span class="tp-leg"><span class="tp-leg-dot" style="background:${TP_DELAY_COLOR}"></span>Delayed</span>`
+      +`<span class="tp-leg"><span class="tp-leg-dot" style="background:${TP_WARN_COLOR}"></span>Potential delay</span>`;
+  }
+  const list=document.getElementById('tp-list'); if(!list) return;
+  const trips=(db.trips||[]).filter(t=>!['Delivered','Cancelled'].includes(t.status)||t.tpStatus);
+  if(!trips.length){ list.innerHTML=`<div class="empty"><div class="ei">📊</div><p>No active trips</p></div>`; return; }
+  list.innerHTML=trips.map(t=>{
+    if(!t.tpStatus) t.tpStatus='Scheduled';
+    if(!t.tpHistory) t.tpHistory=[];
+    const manDelay=!!t.tpDelayedAt;
+    const potDelay=tpIsPotDelay(t)&&!manDelay;
+    const cardCls=manDelay?'tp-delayed':potDelay?'tp-warn':'';
+    const pillHtml=manDelay
+      ?`<span class="tp-pill tp-pill-red">Delayed: ${t.tpStatus}</span>`
+      :potDelay?`<span class="tp-pill tp-pill-amber">${tpElapsed(t.tpMarkedAt)} min — no update</span>`:'';
+    const stageRows=TP_STAGES.map(s=>{
+      const isActive=t.tpStatus===s;
+      const isDelayHere=isActive&&t.tpDelayedAt;
+      return `<div class="tp-stage-row">
+        <button class="tp-sbtn ${isActive?'tp-on':''}" style="${isActive?'background:'+TP_COLORS[s]+';color:#fff;':''}" onclick="tpSetStage('${t.id}','${s}')">${s}</button>
+        ${isActive?`<button class="tp-fbtn ${isDelayHere?'tp-fon':''}" onclick="tpToggleDelay('${t.id}')">${isDelayHere?'! delayed':'! delay'}</button>`:''}
+      </div>`;
+    }).join('');
+    const delayNote=manDelay?`<div class="tp-dnote show">Delay flagged at "${t.tpStatus}" — ${tpFmt(t.tpDelayedAt)}</div>`:'';
+    const tsText=t.tpMarkedAt?`Updated ${tpFmt(t.tpMarkedAt)}`:'Not yet updated';
+    return `<div class="tp-card ${cardCls}">
+      <div class="tp-top">
+        <div><div class="tp-id">${t.waybill}</div><div class="tp-sub">${t.driver} · ${t.origin||''}→${t.dest}</div></div>
+        ${pillHtml}
+      </div>
+      <div class="tp-bar-track">${tpBuildBar(t)}</div>
+      ${stageRows}
+      ${delayNote}
+      ${tpLocRow(t)}
+      <div class="tp-ts">${tsText}</div>
+    </div>`;
+  }).join('');
+  setTimeout(tpSizeCanvases, 80);
+}
+
+function tpSetStage(id,status){
+  const t=(db.trips||[]).find(x=>x.id===id); if(!t) return;
+  t.tpStatus=status; t.tpMarkedAt=Date.now(); t.tpNotified=false; t.tpDelayedAt=null;
+  if(!t.tpHistory) t.tpHistory=[];
+  if(!t.tpHistory.includes(status)) t.tpHistory.push(status);
+  save(); renderTripProgress();
+}
+function tpToggleDelay(id){
+  const t=(db.trips||[]).find(x=>x.id===id); if(!t) return;
+  t.tpDelayedAt=t.tpDelayedAt?null:Date.now();
+  save(); renderTripProgress();
+}
+function tpSizeCanvases(){
+  (db.trips||[]).forEach(t=>{
+    const c=document.getElementById('tp-canvas-'+t.id);
+    if(!c) return;
+    c.width=c.offsetWidth||c.parentElement?.offsetWidth||400;
+    c.height=160;
+    tpDrawTrail('tp-canvas-'+t.id, t.tpLocTrail||[]);
+  });
+}
+
+if('Notification' in window&&Notification.permission==='default') Notification.requestPermission();
+setInterval(()=>{ if(document.getElementById('sec-trip-progress')?.classList.contains('active')) renderTripProgress(); else tpCheckNotifications(); },60000);
+
+function renderRevenue(){
+  const trips=db.trips||[];
+  const totalRev=trips.reduce((s,t)=>s+Number(t.revenue||0),0);
+  const withRev=trips.filter(t=>t.revenue>0).length;
+  const pending=trips.filter(t=>!t.revenue||t.revenue===0).length;
+  const fuelCost=(db.fuel||[]).filter(f=>f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
+  const allwCost=(db.allowances||[]).reduce((s,a)=>s+Number(a.total||0),0);
+  const costs=fuelCost+allwCost;
+  const margin=totalRev-costs;
+  document.getElementById('rev-total').textContent=fmtGHC(totalRev);
+  document.getElementById('rev-count').textContent=withRev;
+  document.getElementById('rev-costs').textContent=fmtGHC(costs);
+  const mEl=document.getElementById('rev-margin');
+  mEl.textContent=fmtGHC(margin); mEl.style.color=margin>=0?'var(--green)':'var(--red)';
+  document.getElementById('rev-pending').textContent=pending;
+  document.getElementById('revenue-tbody').innerHTML=[...trips].reverse().map(t=>{
+    const tFuel=(db.fuel||[]).filter(f=>f.linkedWaybill===t.waybill&&f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
+    const tAllw=(db.allowances||[]).filter(a=>a.waybill===t.waybill).reduce((s,a)=>s+Number(a.total||0),0);
+    const rev=Number(t.revenue||0);
+    const net=rev-tFuel-tAllw;
+    return`<tr style="${!rev?'background:var(--obg);':''}">
+      <td><strong style="color:var(--accent)">${t.waybill}</strong></td>
+      <td style="font-family:monospace;font-size:11px">${t.companyWaybill||'—'}</td>
+      <td style="font-size:12px">${t.date||'—'}</td>
+      <td>${t.driver}</td>
+      <td style="font-size:12px">${t.client||'—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${t.cargo||'—'}</td>
+      <td style="font-size:12px">${t.qty||'—'}</td>
+      <td style="font-size:12px">${t.unitPrice?fmtGHC(t.unitPrice):'—'}</td>
+      <td style="font-weight:700;color:${rev?'var(--green)':'var(--orange)'}">
+        ${rev?fmtGHC(rev):`<span style="font-size:11px">Not entered</span> <button class="btn bsm" style="background:var(--obg);color:var(--orange);border:1px solid #f0c080;font-size:10px;" onclick="editTrip('${t.id}')">+ Add</button>`}
+      </td>
+      <td style="font-size:12px;color:var(--red)">${tFuel?fmtGHC(tFuel):'—'}</td>
+      <td style="font-size:12px;color:var(--orange)">${tAllw?fmtGHC(tAllw):'—'}</td>
+      <td style="font-weight:700;color:${net>=0?'var(--green)':'var(--red)'}">${rev?fmtGHC(net):'—'}</td>
+      <td>${sb(t.status)}</td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="13"><div class="empty"><div class="ei">💵</div><p>No trips yet</p></div></td></tr>`;
+}
+function renderCompanyPerf(){
+  const trips=db.trips||[];
+  const total=trips.length;
+  const delivered=trips.filter(t=>t.status==='Delivered').length;
+  const rate=total?Math.round(delivered/total*100)+'%':'0%';
+  const totalRev=trips.reduce((s,t)=>s+Number(t.revenue||0),0);
+  const fuelCost=(db.fuel||[]).filter(f=>f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
+  const allwCost=(db.allowances||[]).reduce((s,a)=>s+Number(a.total||0),0);
+  document.getElementById('cp-trips').textContent=total;
+  document.getElementById('cp-rate').textContent=rate;
+  document.getElementById('cp-rev').textContent=fmtGHC(totalRev);
+  document.getElementById('cp-costs').textContent=fmtGHC(fuelCost+allwCost);
+  const grid=document.getElementById('cp-grid');
+  const margin=totalRev-(fuelCost+allwCost);
+  grid.innerHTML=`
+    <div class="rcard"><h3>📊 Trips</h3>
+      <div class="rrow"><span>Total</span><span class="rv">${total}</span></div>
+      <div class="rrow"><span>Delivered</span><span class="rv" style="color:var(--green)">${delivered}</span></div>
+      <div class="rrow"><span>Delayed</span><span class="rv" style="color:var(--red)">${trips.filter(t=>t.status==='Delayed').length}</span></div>
+      <div class="rrow"><span>Active</span><span class="rv" style="color:var(--accent)">${trips.filter(t=>['In Transit','Departed','Loading'].includes(t.status)).length}</span></div>
+    </div>
+    <div class="rcard"><h3>💰 Financials</h3>
+      <div class="rrow"><span>Revenue</span><span class="rv" style="color:var(--green)">${fmtGHC(totalRev)}</span></div>
+      <div class="rrow"><span>Fuel Cost</span><span class="rv" style="color:var(--red)">${fmtGHC(fuelCost)}</span></div>
+      <div class="rrow"><span>Allowances</span><span class="rv" style="color:var(--orange)">${fmtGHC(allwCost)}</span></div>
+      <div class="rrow"><span>Net Margin</span><span class="rv" style="color:${margin>=0?'var(--green)':'var(--red)'}">${fmtGHC(margin)}</span></div>
+    </div>
+    <div class="rcard"><h3>👤 Fleet</h3>
+      <div class="rrow"><span>Drivers</span><span class="rv">${(db.drivers||[]).length}</span></div>
+      <div class="rrow"><span>Available</span><span class="rv" style="color:var(--green)">${(db.drivers||[]).filter(d=>d.status==='Available').length}</span></div>
+      <div class="rrow"><span>On Trip</span><span class="rv" style="color:var(--accent)">${(db.drivers||[]).filter(d=>d.status==='On Trip').length}</span></div>
+    </div>`;
+}
+function renderHistory(){
+  const el=document.getElementById('hist-list'); if(!el) return;
+  const trips=[...db.trips||[]].reverse().slice(0,30);
+  el.innerHTML=trips.map(t=>`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);">
+      <div style="background:var(--s2);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🚛</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">${t.waybill} · ${t.driver} → ${t.dest}</div>
+        <div style="font-size:11px;color:var(--muted)">${t.cargo} · ${t.date||'—'} · Entered by ${t.enteredByName||'—'}</div>
+      </div>
+      ${sb(t.status)}
+    </div>`).join('')||`<div class="empty"><div class="ei">🕐</div><p>No history yet</p></div>`;
+}
+function renderUsers(){
+  const grid=document.getElementById('users-grid'); if(!grid) return;
+  if(!can.isAdmin()){ grid.innerHTML=`<div style="background:var(--rbg);border:1px solid var(--red);border-radius:var(--r);padding:16px;color:var(--red);text-align:center;">🔒 Admin access required.</div>`; return; }
+  document.getElementById('codeval').textContent=db.regCode||'NFAITH2024';
+  const rc={admin:'#b52b1e',manager:'#0b7a52',driver:'#1558a8',office:'#5433a8'};
+  grid.innerHTML=Object.entries(users).map(([key,u])=>`
+    <div class="ucard">
+      <div class="uavbig" style="background:${rc[u.role]||'#555'}">${(u.name||'?')[0].toUpperCase()}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14px">${u.name||'—'}</div>
+        <div style="font-size:11px;color:var(--muted)">${u.email||key}</div>
+        ${u.phone?`<div style="font-size:11px;color:var(--muted)">📱 ${u.phone}</div>`:''}
+        <div style="margin-top:5px"><span class="rp rp-${u.role}">${u.role}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <button class="btn be bsm" onclick="editUser('${key}')">✏️</button>
+        ${key!=='admin_at_nfaith_com'?`<button class="btn bd bsm" onclick="deleteUser('${key}')">✕</button>`:''}
+      </div>
+    </div>`).join('');
+  // Activity log
+  const tbody=document.getElementById('activity-tbody');
+  const log=db.activityLog||[];
+  tbody.innerHTML=log.slice(0,50).map(a=>`<tr>
+    <td><strong>${a.name}</strong><div style="font-size:10px;color:var(--muted)">${a.email}</div></td>
+    <td><span class="rp rp-${a.role}">${a.role}</span></td>
+    <td style="font-size:12px;font-weight:600;color:${a.action==='Logged in'?'var(--green)':a.action==='Logged out'?'var(--muted)':'var(--accent)'}">${a.action}</td>
+    <td style="font-size:12px">${a.date}</td>
+    <td style="font-size:12px;font-family:monospace">${a.time}</td>
+    <td style="font-size:12px;font-weight:700;color:var(--accent)">${a.duration}</td>
+  </tr>`).join('')||`<tr><td colspan="6"><div class="empty"><div class="ei">🕐</div><p>No activity yet</p></div></td></tr>`;
+}
+
+// ═══════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════
+function exportRevCSV(){
+  const rows=[['N-Faith WB','Co. WB No.','Date','Driver','Client','Cargo','Qty','Unit Price','Revenue','Status']];
+  (db.trips||[]).forEach(t=>rows.push([t.waybill,t.companyWaybill||'',t.date,t.driver,t.client||'',t.cargo,t.qty||'',t.unitPrice||'',t.revenue||0,t.status]));
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='nfaith-revenue-'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+(async()=>{
+  await load();
+  // Restore session after data loaded
+  try{
+    const saved = localStorage.getItem(SESS);
+    if(saved){
+      const s = JSON.parse(saved);
+      if(s && s.email && users[eKey(s.email)]){
+        me = s;
+        if(!me.loginTime) me.loginTime = Date.now();
+        launchApp();
+        return;
+      }
+    }
+  }catch(e){ localStorage.removeItem(SESS); }
+})();
+
+document.getElementById('l-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('l-email').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('l-pass').focus(); });
+document.getElementById('l-pass-phone').addEventListener('keydown',e=>{ if(e.key==='Enter') doLoginPhone(); });
+document.getElementById('l-phone').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('l-pass-phone').focus(); });
+
+// Set the first filter button active
+setMsgFilter('all');
+</script>
+</body>
+</html>
