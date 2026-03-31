@@ -325,7 +325,10 @@ tbody tr:hover{background:var(--bg);}
   <header>
     <div class="hlogo">🚛 N-FAITH LTD <span>FREIGHTOPS</span></div>
     <div class="hright">
-      <span class="sdot" id="sdot"></span>
+      <button id="sync-btn" onclick="manualSync()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:5px 13px;color:#fff;font-family:var(--fb);font-size:12px;font-weight:600;cursor:pointer;transition:background .2s;">
+        <span id="sync-dot" style="width:8px;height:8px;border-radius:50%;background:#fcd34d;flex-shrink:0;transition:background .3s;"></span>
+        <span id="sync-label">Loading…</span>
+      </button>
       <div class="uchip" onclick="doLogout()">
         <div class="uav" id="hdr-av" style="background:#1d72d1">A</div>
         <div><div class="uname" id="hdr-name">Admin</div><div class="urole" id="hdr-role">admin</div></div>
@@ -447,7 +450,7 @@ tbody tr:hover{background:var(--bg);}
     <button class="btn bp" onclick="openModal('trip')">+ New Trip</button>
   </div>
   <div class="tw"><table>
-    <thead><tr><th>N-Faith WB</th><th>Driver</th><th>Truck</th><th>Pickup Co.</th><th>Route</th><th>Cargo</th><th>Co. WB No.</th><th>Qty</th><th>Revenue</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+    <thead><tr><th>N-Faith WB</th><th>Driver</th><th>Truck</th><th>Pickup Co.</th><th>Route</th><th>Cargo</th><th>Co. WB No.</th><th>Qty</th><th>Revenue</th><th>Status</th><th>Order Date</th><th>Departure</th><th>Arrival</th><th>Delivery</th><th>Actions</th></tr></thead>
     <tbody id="trips-tbody"></tbody>
   </table></div>
 </div>
@@ -503,7 +506,7 @@ tbody tr:hover{background:var(--bg);}
 <div class="section" id="sec-reverse-loads">
   <div class="sechdr"><div class="sectitle">🔄 Reverse Loads</div></div>
   <div class="tw"><table>
-    <thead><tr><th>N-Faith WB</th><th>Driver</th><th>Outbound Route</th><th>Return Pickup</th><th>Return Dest</th><th>Return Cargo</th><th>Return Status</th></tr></thead>
+    <thead><tr><th>N-Faith WB</th><th>Driver</th><th>Outbound Route</th><th>Return Pickup</th><th>Return Dest</th><th>Return Cargo</th><th>Customer</th><th>Contact</th><th>Qty</th><th>Unit Price</th><th>Revenue (GH₵)</th><th>Return Status</th></tr></thead>
     <tbody id="rl-tbody"></tbody>
   </table></div>
 </div>
@@ -684,7 +687,7 @@ tbody tr:hover{background:var(--bg);}
     <button class="btn bp" onclick="openModal('cargo')">+ New Shipment</button>
   </div>
   <div class="tw"><table>
-    <thead><tr><th>ID</th><th>Co. WB No.</th><th>Description</th><th>Client</th><th>Pickup Co.</th><th>Qty</th><th>Unit Price</th><th>Amount (GH₵)</th><th>Weight (kg)</th><th>N-Faith WB</th><th>Status</th><th>Actions</th></tr></thead>
+    <thead><tr><th>ID</th><th>Co. WB No.</th><th>Description</th><th>Client</th><th>Contact</th><th>Pickup Co.</th><th>Qty</th><th>Unit Price</th><th>Amount (GH₵)</th><th>Weight (kg)</th><th>N-Faith WB</th><th>Order Date</th><th>Departure</th><th>Arrival</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead>
     <tbody id="cargo-tbody"></tbody>
   </table></div>
 </div>
@@ -832,6 +835,7 @@ tbody tr:hover{background:var(--bg);}
     <div class="fsec">📦 Cargo & Client</div>
     <div class="fg full"><label>Cargo Description *</label><input id="t-cargo" placeholder="e.g. 200 bags of cement"></div>
     <div class="fg"><label>Client / Receiver</label><input id="t-client" placeholder="Who receives cargo"></div>
+    <div class="fg"><label>Client Contact</label><input id="t-client-contact" placeholder="Phone number"></div>
     <div class="fg"><label>Company WB No. (from company)</label><input id="t-company-wb" placeholder="e.g. CWB-2024-001" style="font-family:monospace;font-weight:700;"></div>
     <div class="fg"><label>Weight (kg)</label><input id="t-weight" type="number" placeholder="0"></div>
     <div class="fsec">💰 Revenue</div>
@@ -845,7 +849,10 @@ tbody tr:hover{background:var(--bg);}
     <div class="fg"><label>Priority</label>
       <select id="t-priority"><option>Normal</option><option>Urgent</option><option>High</option></select>
     </div>
-    <div class="fg"><label>Date</label><input id="t-date" type="date"></div>
+    <div class="fg"><label>Order Date</label><input id="t-order-date" type="date"></div>
+    <div class="fg"><label>Departure Date</label><input id="t-depart-date" type="date"></div>
+    <div class="fg"><label>Arrival Date</label><input id="t-arrive-date" type="date"></div>
+    <div class="fg"><label>Delivery Date</label><input id="t-deliver-date" type="date"></div>
     <div class="fg"><label>Manager / Dispatcher</label><input id="t-manager" placeholder="Name"></div>
     <div class="fg full"><label>Notes</label><textarea id="t-notes" rows="2"></textarea></div>
     <div class="fsec">🔄 Reverse Load</div>
@@ -854,14 +861,20 @@ tbody tr:hover{background:var(--bg);}
     </div>
     <div id="rl-fields" style="display:none;grid-column:1/-1;">
       <div class="fg2">
+        <div class="fsec">📦 Return Cargo</div>
         <div class="fg"><label>Return Pickup</label><input id="t-rv-pickup" placeholder="Pickup for return cargo"></div>
         <div class="fg"><label>Return Destination</label><input id="t-rv-dest" placeholder="Where it goes"></div>
         <div class="fg"><label>Return Cargo</label><input id="t-rv-cargo" placeholder="e.g. Empty containers"></div>
-        <div class="fg"><label>Return Client</label><input id="t-rv-client"></div>
         <div class="fg"><label>Return Weight (kg)</label><input id="t-rv-weight" type="number" placeholder="0"></div>
+        <div class="fg"><label>Return Qty</label><input id="t-rv-qty" type="number" placeholder="0" oninput="calcRvRev()"></div>
+        <div class="fg"><label>Return Unit Price (GH₵)</label><input id="t-rv-unit-price" type="number" step="0.01" placeholder="0.00" oninput="calcRvRev()"></div>
+        <div class="fg"><label>Return Revenue (GH₵) AUTO</label><input id="t-rv-revenue" type="number" readonly style="background:var(--gbg);border-color:var(--green);color:var(--green);font-weight:700;"></div>
         <div class="fg"><label>Return Status</label>
           <select id="t-rv-status"><option>Pending</option><option>In Transit</option><option>Delivered</option></select>
         </div>
+        <div class="fsec">👤 Return Customer</div>
+        <div class="fg"><label>Customer Name</label><input id="t-rv-client" placeholder="Return cargo client / receiver"></div>
+        <div class="fg"><label>Customer Contact</label><input id="t-rv-contact" placeholder="Phone number"></div>
       </div>
     </div>
   </div>
@@ -931,13 +944,17 @@ tbody tr:hover{background:var(--bg);}
     <div class="fg full"><label>Description *</label><input id="c-desc" placeholder="e.g. 500 bags of cement"></div>
     <div class="fg"><label>Company WB No. (from company)</label><input id="c-company-wb" placeholder="e.g. CWB-2024-001" style="font-family:monospace;font-weight:700;"></div>
     <div class="fg"><label>Client</label><input id="c-client" placeholder="Client / receiver"></div>
+    <div class="fg"><label>Client Contact</label><input id="c-client-contact" placeholder="Phone number"></div>
     <div class="fg"><label>Pickup Company</label><input id="c-pickup" placeholder="Pickup company"></div>
     <div class="fg"><label>Quantity</label><input id="c-qty" type="number" placeholder="0" oninput="calcCargo()"></div>
     <div class="fg"><label>Unit Price (GH₵)</label><input id="c-unit-price" type="number" step="0.01" placeholder="0.00" oninput="calcCargo()"></div>
     <div class="fg"><label>Amount (GH₵)</label><input id="c-amount" type="number" step="0.01" placeholder="Auto or manual"></div>
     <div class="fg"><label>Weight (kg)</label><input id="c-weight" type="number" placeholder="0"></div>
     <div class="fg"><label>Linked N-Faith WB</label><select id="c-trip"><option value="">— None —</option></select></div>
-    <div class="fg"><label>ETA</label><input id="c-eta" type="date"></div>
+    <div class="fg"><label>Order Date</label><input id="c-order-date" type="date"></div>
+    <div class="fg"><label>Departure Date</label><input id="c-depart-date" type="date"></div>
+    <div class="fg"><label>Arrival Date</label><input id="c-arrive-date" type="date"></div>
+    <div class="fg"><label>Delivery Date</label><input id="c-deliver-date" type="date"></div>
     <div class="fg"><label>Status</label>
       <select id="c-status"><option>Pending</option><option>In Transit</option><option>Delivered</option><option>Delayed</option></select>
     </div>
@@ -1118,21 +1135,78 @@ async function fbSet(path, data){
   }catch(e){ return false; }
 }
 
+// ═══════════════════════════════════════════
+// SYNC ENGINE — offline queue + status button
+// ═══════════════════════════════════════════
+let _pendingUpload = false;  // true when we have local changes not yet on Firebase
+let _isOnline = navigator.onLine;
+
 function setDot(state){
-  const dot=document.getElementById('sdot');
-  if(!dot) return;
-  dot.style.background = state==='ok'?'#6ee7b7': state==='warn'?'#fcd34d':'#f87171';
-  dot.title = state==='ok'?'Synced': state==='warn'?'Saving…':'Offline — saved locally';
+  // legacy calls still work
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if(!dot||!lbl) return;
+  if(state==='ok'){
+    dot.style.background='#6ee7b7'; lbl.textContent='Synced';
+    _pendingUpload=false;
+  } else if(state==='warn'){
+    dot.style.background='#fcd34d'; lbl.textContent='Saving…';
+  } else if(state==='local'){
+    dot.style.background='#fb923c'; lbl.textContent='Saved locally';
+  } else {
+    dot.style.background='#f87171'; lbl.textContent='Offline';
+  }
+}
+
+async function tryUploadPending(){
+  if(!_pendingUpload) return;
+  const ok = await fbSet('db', db);
+  if(ok){
+    _pendingUpload=false;
+    setDot('ok');
+    toast('☁️ Uploaded to cloud!','win');
+  }
+}
+
+async function manualSync(){
+  const lbl=document.getElementById('sync-label');
+  if(lbl) lbl.textContent='Syncing…';
+  try{
+    const [fbDb,fbUsers]=await Promise.all([fbGet('db'),fbGet('users')]);
+    if(fbUsers){
+      const ak='admin_at_nfaith_com'; const bk=users[ak];
+      users=fbUsers; if(!users[ak]) users[ak]=bk;
+      try{localStorage.setItem('nf-users',JSON.stringify(users));}catch(e){}
+    }
+    if(fbDb){
+      const h=JSON.stringify(fbDb);
+      if(h!==_lastHash){
+        db={...db,...fbDb}; _lastHash=h;
+        try{localStorage.setItem('nf-db',h);}catch(e){}
+        render();
+      }
+    }
+    // Push any pending local changes
+    if(_pendingUpload){ await fbSet('db',db); _pendingUpload=false; }
+    setDot('ok');
+    toast('✅ Synced!','win');
+  }catch(e){
+    setDot(_pendingUpload?'local':'err');
+    toast('⚠️ Could not reach server','');
+  }
 }
 
 function save(){
+  // Always save to localStorage immediately — never lose data
   try{ localStorage.setItem('nf-db', JSON.stringify(db)); }catch(e){}
+  _pendingUpload = true;
   setDot('warn');
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(async()=>{
+    if(!navigator.onLine){ setDot('local'); return; }
     const ok = await fbSet('db', db);
-    setDot(ok?'ok':'err');
-    if(!ok) toast('⚠️ Saved locally — check connection','');
+    if(ok){ _pendingUpload=false; setDot('ok'); }
+    else { setDot('local'); }
   }, 600);
 }
 
@@ -1140,6 +1214,22 @@ function saveUsers(){
   try{ localStorage.setItem('nf-users', JSON.stringify(users)); }catch(e){}
   fbSet('users', users);
 }
+
+// Listen for coming back online — auto-upload pending data
+window.addEventListener('online', ()=>{
+  _isOnline=true;
+  if(_pendingUpload){
+    setDot('warn');
+    setTimeout(async()=>{
+      const ok=await fbSet('db',db);
+      if(ok){ _pendingUpload=false; setDot('ok'); toast('☁️ Back online — data uploaded!','win'); }
+    }, 1000);
+  } else { setDot('ok'); }
+});
+window.addEventListener('offline', ()=>{
+  _isOnline=false;
+  setDot(_pendingUpload?'local':'local');
+});
 
 async function load(){
   // 1. Try localStorage for instant startup
@@ -1193,8 +1283,13 @@ function startSync(){
           toast('🔄 Updated from another device!');
         }
       }
+      // Upload any pending local changes
+      if(_pendingUpload){
+        const ok=await fbSet('db',db);
+        if(ok){ _pendingUpload=false; }
+      }
       setDot('ok');
-    }catch(e){ setDot('err'); }
+    }catch(e){ setDot(_pendingUpload?'local':'err'); }
   }, 8000);
 }
 function ensureAdmin(){
@@ -1442,9 +1537,10 @@ function openModal(type){
   if(type==='trip'){
     document.getElementById('t-eid').value='';
     document.getElementById('trip-m-title').textContent='Log New Trip';
-    ['t-pickup','t-origin','t-dest','t-cargo','t-client','t-notes','t-manager','t-company-wb'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
-    ['t-dist','t-weight','t-qty','t-unit-price','t-revenue'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
-    document.getElementById('t-date').value=today;
+    ['t-pickup','t-origin','t-dest','t-cargo','t-client','t-client-contact','t-notes','t-manager','t-company-wb'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    ['t-dist','t-weight','t-qty','t-unit-price','t-revenue','t-rv-qty','t-rv-unit-price','t-rv-revenue'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    ['t-order-date','t-depart-date','t-arrive-date','t-deliver-date'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('t-order-date').value=today;
     document.getElementById('t-status').value='Scheduled';
     document.getElementById('t-priority').value='Normal';
     document.getElementById('t-rl').value='no'; toggleRL();
@@ -1467,9 +1563,10 @@ function openModal(type){
   if(type==='cargo'){
     document.getElementById('c-eid').value='';
     document.getElementById('cargo-m-title').textContent='New Shipment';
-    ['c-desc','c-client','c-pickup','c-company-wb'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    ['c-desc','c-client','c-client-contact','c-pickup','c-company-wb'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
     ['c-qty','c-unit-price','c-amount','c-weight'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
-    document.getElementById('c-eta').value=today;
+    ['c-order-date','c-depart-date','c-arrive-date','c-deliver-date'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
+    document.getElementById('c-order-date').value=today;
     document.getElementById('c-status').value='Pending';
     document.getElementById('c-trip').value='';
   }
@@ -1551,6 +1648,12 @@ function calcTRev(){
   const p=parseFloat(document.getElementById('t-unit-price').value)||0;
   document.getElementById('t-revenue').value=q&&p?(q*p).toFixed(2):'';
 }
+function calcRvRev(){
+  const q=parseFloat(document.getElementById('t-rv-qty').value)||0;
+  const p=parseFloat(document.getElementById('t-rv-unit-price').value)||0;
+  const el=document.getElementById('t-rv-revenue');
+  if(el) el.value=q&&p?(q*p).toFixed(2):'';
+}
 function calcCargo(){
   const q=parseFloat(document.getElementById('c-qty').value)||0;
   const p=parseFloat(document.getElementById('c-unit-price').value)||0;
@@ -1603,6 +1706,9 @@ function saveTrip(){
   const qty=parseFloat(document.getElementById('t-qty').value)||0;
   const unitPrice=parseFloat(document.getElementById('t-unit-price').value)||0;
   const revenue=qty&&unitPrice?parseFloat((qty*unitPrice).toFixed(2)):0;
+  const rvQty=parseFloat(document.getElementById('t-rv-qty').value)||0;
+  const rvUnitPrice=parseFloat(document.getElementById('t-rv-unit-price').value)||0;
+  const rvRevenue=rvQty&&rvUnitPrice?parseFloat((rvQty*rvUnitPrice).toFixed(2)):0;
   const data={
     driver:document.getElementById('t-driver').value,
     truck:document.getElementById('t-truck').value,
@@ -1610,12 +1716,17 @@ function saveTrip(){
     origin:document.getElementById('t-origin').value,
     dest, cargo,
     client:document.getElementById('t-client').value,
+    clientContact:document.getElementById('t-client-contact').value,
     companyWaybill:document.getElementById('t-company-wb').value,
     weight:parseFloat(document.getElementById('t-weight').value)||0,
     dist:parseFloat(document.getElementById('t-dist').value)||0,
     status:document.getElementById('t-status').value,
     priority:document.getElementById('t-priority').value,
-    date:document.getElementById('t-date').value,
+    orderDate:document.getElementById('t-order-date').value,
+    departDate:document.getElementById('t-depart-date').value,
+    arriveDate:document.getElementById('t-arrive-date').value,
+    deliverDate:document.getElementById('t-deliver-date').value,
+    date:document.getElementById('t-order-date').value||document.getElementById('t-depart-date').value,
     notes:document.getElementById('t-notes').value,
     manager:document.getElementById('t-manager').value,
     qty, unitPrice, revenue,
@@ -1624,7 +1735,9 @@ function saveTrip(){
     rvDest:document.getElementById('t-rv-dest').value,
     rvCargo:document.getElementById('t-rv-cargo').value,
     rvClient:document.getElementById('t-rv-client').value,
+    rvContact:document.getElementById('t-rv-contact').value,
     rvWeight:parseFloat(document.getElementById('t-rv-weight').value)||0,
+    rvQty, rvUnitPrice, rvRevenue,
     rvStatus:document.getElementById('t-rv-status').value,
     enteredBy:me?.email||'',
     enteredByName:me?.name||'',
@@ -1651,10 +1764,16 @@ function syncCargoFromTrip(trip){
   if(!trip.cargo) return;
   const existing=db.cargo.find(c=>c.linkedTripId===trip.id);
   const cd={
-    desc:trip.cargo, client:trip.client, pickupCompany:trip.pickupCompany,
+    desc:trip.cargo, client:trip.client, clientContact:trip.clientContact||'',
+    pickupCompany:trip.pickupCompany,
     weight:trip.weight, trip:trip.waybill, companyWaybill:trip.companyWaybill||'',
     qty:trip.qty, unitPrice:trip.unitPrice, amount:trip.revenue||0,
-    eta:trip.date, status:trip.status==='Delivered'?'Delivered':trip.status==='In Transit'?'In Transit':'Pending',
+    orderDate:trip.orderDate||trip.date||'',
+    departDate:trip.departDate||'',
+    arriveDate:trip.arriveDate||'',
+    deliverDate:trip.deliverDate||'',
+    eta:trip.orderDate||trip.date||'',
+    status:trip.status==='Delivered'?'Delivered':trip.status==='In Transit'?'In Transit':'Pending',
     linkedTripId:trip.id,
   };
   if(existing){ Object.assign(existing, cd); }
@@ -1673,6 +1792,7 @@ function editTrip(id){
   document.getElementById('t-dest').value=t.dest||'';
   document.getElementById('t-cargo').value=t.cargo||'';
   document.getElementById('t-client').value=t.client||'';
+  document.getElementById('t-client-contact').value=t.clientContact||'';
   document.getElementById('t-company-wb').value=t.companyWaybill||'';
   document.getElementById('t-weight').value=t.weight||'';
   document.getElementById('t-dist').value=t.dist||'';
@@ -1681,7 +1801,10 @@ function editTrip(id){
   document.getElementById('t-revenue').value=t.revenue||'';
   document.getElementById('t-status').value=t.status||'Scheduled';
   document.getElementById('t-priority').value=t.priority||'Normal';
-  document.getElementById('t-date').value=t.date||'';
+  document.getElementById('t-order-date').value=t.orderDate||t.date||'';
+  document.getElementById('t-depart-date').value=t.departDate||'';
+  document.getElementById('t-arrive-date').value=t.arriveDate||'';
+  document.getElementById('t-deliver-date').value=t.deliverDate||'';
   document.getElementById('t-notes').value=t.notes||'';
   document.getElementById('t-manager').value=t.manager||'';
   document.getElementById('t-rl').value=t.reverseLoad||'no';
@@ -1689,7 +1812,11 @@ function editTrip(id){
   document.getElementById('t-rv-dest').value=t.rvDest||'';
   document.getElementById('t-rv-cargo').value=t.rvCargo||'';
   document.getElementById('t-rv-client').value=t.rvClient||'';
+  document.getElementById('t-rv-contact').value=t.rvContact||'';
   document.getElementById('t-rv-weight').value=t.rvWeight||'';
+  document.getElementById('t-rv-qty').value=t.rvQty||'';
+  document.getElementById('t-rv-unit-price').value=t.rvUnitPrice||'';
+  document.getElementById('t-rv-revenue').value=t.rvRevenue||'';
   document.getElementById('t-rv-status').value=t.rvStatus||'Pending';
   toggleRL();
   document.getElementById('modal-trip').classList.add('open');
@@ -1797,6 +1924,7 @@ function saveCargo(){
   const eid=document.getElementById('c-eid').value;
   const data={
     desc, client:document.getElementById('c-client').value,
+    clientContact:document.getElementById('c-client-contact').value,
     pickupCompany:document.getElementById('c-pickup').value,
     companyWaybill:document.getElementById('c-company-wb').value,
     qty:parseFloat(document.getElementById('c-qty').value)||0,
@@ -1804,7 +1932,11 @@ function saveCargo(){
     amount:parseFloat(document.getElementById('c-amount').value)||0,
     weight:parseFloat(document.getElementById('c-weight').value)||0,
     trip:document.getElementById('c-trip').value,
-    eta:document.getElementById('c-eta').value,
+    orderDate:document.getElementById('c-order-date').value,
+    departDate:document.getElementById('c-depart-date').value,
+    arriveDate:document.getElementById('c-arrive-date').value,
+    deliverDate:document.getElementById('c-deliver-date').value,
+    eta:document.getElementById('c-order-date').value,
     status:document.getElementById('c-status').value,
   };
   if(eid){ const i=db.cargo.findIndex(c=>c.id===eid); if(i>=0) db.cargo[i]={...db.cargo[i],...data}; toast('Updated!'); }
@@ -1818,6 +1950,7 @@ function editCargo(id){
   document.getElementById('cargo-m-title').textContent='Edit Shipment';
   document.getElementById('c-desc').value=c.desc||'';
   document.getElementById('c-client').value=c.client||'';
+  document.getElementById('c-client-contact').value=c.clientContact||'';
   document.getElementById('c-pickup').value=c.pickupCompany||'';
   document.getElementById('c-company-wb').value=c.companyWaybill||'';
   document.getElementById('c-qty').value=c.qty||'';
@@ -1825,7 +1958,10 @@ function editCargo(id){
   document.getElementById('c-amount').value=c.amount||'';
   document.getElementById('c-weight').value=c.weight||'';
   document.getElementById('c-trip').value=c.trip||'';
-  document.getElementById('c-eta').value=c.eta||'';
+  document.getElementById('c-order-date').value=c.orderDate||c.eta||'';
+  document.getElementById('c-depart-date').value=c.departDate||'';
+  document.getElementById('c-arrive-date').value=c.arriveDate||'';
+  document.getElementById('c-deliver-date').value=c.deliverDate||'';
   document.getElementById('c-status').value=c.status||'Pending';
   document.getElementById('modal-cargo').classList.add('open');
 }
@@ -2366,12 +2502,15 @@ function renderTrips(){
     <td style="font-size:12px">${t.qty||'—'}</td>
     <td style="font-weight:700;color:var(--green)">${t.revenue?fmtGHC(t.revenue):'—'}</td>
     <td>${sb(t.status)}</td>
-    <td style="font-size:12px">${t.date||'—'}</td>
+    <td style="font-size:12px">${t.orderDate||t.date||'—'}</td>
+    <td style="font-size:12px">${t.departDate||'—'}</td>
+    <td style="font-size:12px">${t.arriveDate||'—'}</td>
+    <td style="font-size:12px">${t.deliverDate||'—'}</td>
     <td style="display:flex;gap:3px;flex-wrap:wrap;">
       ${can.edit()?`<button class="btn be bsm" onclick="editTrip('${t.id}')">✏️</button>`:''}
       ${can.del()?`<button class="btn bd bsm" onclick="deleteTrip('${t.id}')">✕</button>`:''}
     </td>
-  </tr>`).join('')||`<tr><td colspan="12"><div class="empty"><div class="ei">🚛</div><p>No trips yet</p></div></td></tr>`;
+  </tr>`).join('')||`<tr><td colspan="15"><div class="empty"><div class="ei">🚛</div><p>No trips yet</p></div></td></tr>`;
 }
 // ═══════════════════════════════════════════
 // COMPANY WAYBILL UPLOAD
@@ -2482,8 +2621,13 @@ function renderReverse(){
     <td style="font-size:12px">${t.rvPickup||'—'}</td>
     <td style="font-size:12px">${t.rvDest||'—'}</td>
     <td style="font-size:12px">${t.rvCargo||'—'}</td>
+    <td style="font-size:12px">${t.rvClient||'—'}</td>
+    <td style="font-size:12px">${t.rvContact||'—'}</td>
+    <td style="font-size:12px">${t.rvQty||'—'}</td>
+    <td style="font-size:12px">${t.rvUnitPrice?fmtGHC(t.rvUnitPrice):'—'}</td>
+    <td style="font-weight:700;color:var(--green)">${t.rvRevenue?fmtGHC(t.rvRevenue):'—'}</td>
     <td>${sb(t.rvStatus||'Pending')}</td>
-  </tr>`).join('')||`<tr><td colspan="7"><div class="empty"><div class="ei">🔄</div><p>No reverse loads</p></div></td></tr>`;
+  </tr>`).join('')||`<tr><td colspan="12"><div class="empty"><div class="ei">🔄</div><p>No reverse loads</p></div></td></tr>`;
 }
 function renderFuel(){
   const fuel=(db.fuel||[]).filter(f=>f.type==='Fuel Refill');
@@ -2593,18 +2737,23 @@ function renderCargo(){
     <td style="font-family:monospace;font-size:11px;font-weight:700;color:var(--accent)">${c.companyWaybill||'—'}</td>
     <td>${c.desc}</td>
     <td style="font-size:12px">${c.client||'—'}</td>
+    <td style="font-size:12px">${c.clientContact||'—'}</td>
     <td style="font-size:12px">${c.pickupCompany||'—'}</td>
     <td style="font-size:12px">${c.qty||'—'}</td>
     <td style="font-size:12px">${c.unitPrice?fmtGHC(c.unitPrice):'—'}</td>
     <td style="font-weight:700;color:var(--green)">${c.amount?fmtGHC(c.amount):'—'}</td>
     <td style="font-size:12px">${Number(c.weight||0).toLocaleString()} kg</td>
     <td style="font-size:12px;color:var(--accent);font-weight:600">${c.trip||'—'}</td>
+    <td style="font-size:12px">${c.orderDate||c.eta||'—'}</td>
+    <td style="font-size:12px">${c.departDate||'—'}</td>
+    <td style="font-size:12px">${c.arriveDate||'—'}</td>
+    <td style="font-size:12px">${c.deliverDate||'—'}</td>
     <td>${sb(c.status||'Pending')}</td>
     <td style="display:flex;gap:3px">
       ${can.edit()?`<button class="btn be bsm" onclick="editCargo('${c.id}')">✏️</button>`:''}
       ${can.del()?`<button class="btn bd bsm" onclick="deleteCargo('${c.id}')">✕</button>`:''}
     </td>
-  </tr>`).join('')||`<tr><td colspan="12"><div class="empty"><div class="ei">📦</div><p>No cargo entries</p></div></td></tr>`;
+  </tr>`).join('')||`<tr><td colspan="17"><div class="empty"><div class="ei">📦</div><p>No cargo entries</p></div></td></tr>`;
 }
 function renderDispatch(){
   document.getElementById('dispatch-tbody').innerHTML=[...(db.dispatches||[])].reverse().map(d=>`<tr>
@@ -2871,9 +3020,16 @@ function renderTripProgress(){
 
 function tpSetStage(id,status){
   const t=(db.trips||[]).find(x=>x.id===id); if(!t) return;
-  t.tpStatus=status; t.tpMarkedAt=Date.now(); t.tpNotified=false; t.tpDelayedAt=null;
-  if(!t.tpHistory) t.tpHistory=[];
-  if(!t.tpHistory.includes(status)) t.tpHistory.push(status);
+  // Toggle: clicking the active stage deselects it
+  if(t.tpStatus===status){
+    t.tpStatus=null; t.tpMarkedAt=null; t.tpNotified=false; t.tpDelayedAt=null;
+    // Remove from history so the bar updates
+    if(t.tpHistory) t.tpHistory=t.tpHistory.filter(s=>s!==status);
+  } else {
+    t.tpStatus=status; t.tpMarkedAt=Date.now(); t.tpNotified=false; t.tpDelayedAt=null;
+    if(!t.tpHistory) t.tpHistory=[];
+    if(!t.tpHistory.includes(status)) t.tpHistory.push(status);
+  }
   save(); renderTripProgress();
 }
 function tpToggleDelay(id){
@@ -2896,9 +3052,9 @@ setInterval(()=>{ if(document.getElementById('sec-trip-progress')?.classList.con
 
 function renderRevenue(){
   const trips=db.trips||[];
-  const totalRev=trips.reduce((s,t)=>s+Number(t.revenue||0),0);
-  const withRev=trips.filter(t=>t.revenue>0).length;
-  const pending=trips.filter(t=>!t.revenue||t.revenue===0).length;
+  const totalRev=trips.reduce((s,t)=>s+Number(t.revenue||0)+Number(t.rvRevenue||0),0);
+  const withRev=trips.filter(t=>t.revenue>0||t.rvRevenue>0).length;
+  const pending=trips.filter(t=>(!t.revenue||t.revenue===0)&&(!t.rvRevenue||t.rvRevenue===0)).length;
   const fuelCost=(db.fuel||[]).filter(f=>f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
   const allwCost=(db.allowances||[]).reduce((s,a)=>s+Number(a.total||0),0);
   const costs=fuelCost+allwCost;
@@ -2912,19 +3068,20 @@ function renderRevenue(){
   document.getElementById('revenue-tbody').innerHTML=[...trips].reverse().map(t=>{
     const tFuel=(db.fuel||[]).filter(f=>f.linkedWaybill===t.waybill&&f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
     const tAllw=(db.allowances||[]).filter(a=>a.waybill===t.waybill).reduce((s,a)=>s+Number(a.total||0),0);
-    const rev=Number(t.revenue||0);
+    const rev=Number(t.revenue||0)+Number(t.rvRevenue||0);
     const net=rev-tFuel-tAllw;
+    const rvTag=t.rvRevenue?`<span class="badge bg-t" style="font-size:9px">+${fmtGHC(t.rvRevenue)} rv</span>`:'';
     return`<tr style="${!rev?'background:var(--obg);':''}">
       <td><strong style="color:var(--accent)">${t.waybill}</strong></td>
       <td style="font-family:monospace;font-size:11px">${t.companyWaybill||'—'}</td>
-      <td style="font-size:12px">${t.date||'—'}</td>
+      <td style="font-size:12px">${t.orderDate||t.date||'—'}</td>
       <td>${t.driver}</td>
       <td style="font-size:12px">${t.client||'—'}</td>
       <td style="font-size:11px;color:var(--muted)">${t.cargo||'—'}</td>
       <td style="font-size:12px">${t.qty||'—'}</td>
       <td style="font-size:12px">${t.unitPrice?fmtGHC(t.unitPrice):'—'}</td>
       <td style="font-weight:700;color:${rev?'var(--green)':'var(--orange)'}">
-        ${rev?fmtGHC(rev):`<span style="font-size:11px">Not entered</span> <button class="btn bsm" style="background:var(--obg);color:var(--orange);border:1px solid #f0c080;font-size:10px;" onclick="editTrip('${t.id}')">+ Add</button>`}
+        ${rev?`${fmtGHC(Number(t.revenue||0))} ${rvTag}`:`<span style="font-size:11px">Not entered</span> <button class="btn bsm" style="background:var(--obg);color:var(--orange);border:1px solid #f0c080;font-size:10px;" onclick="editTrip('${t.id}')">+ Add</button>`}
       </td>
       <td style="font-size:12px;color:var(--red)">${tFuel?fmtGHC(tFuel):'—'}</td>
       <td style="font-size:12px;color:var(--orange)">${tAllw?fmtGHC(tAllw):'—'}</td>
@@ -2938,7 +3095,7 @@ function renderCompanyPerf(){
   const total=trips.length;
   const delivered=trips.filter(t=>t.status==='Delivered').length;
   const rate=total?Math.round(delivered/total*100)+'%':'0%';
-  const totalRev=trips.reduce((s,t)=>s+Number(t.revenue||0),0);
+  const totalRev=trips.reduce((s,t)=>s+Number(t.revenue||0)+Number(t.rvRevenue||0),0);
   const fuelCost=(db.fuel||[]).filter(f=>f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
   const allwCost=(db.allowances||[]).reduce((s,a)=>s+Number(a.total||0),0);
   document.getElementById('cp-trips').textContent=total;
@@ -3041,6 +3198,7 @@ function exportRevCSV(){
   // Show loading state on login screen while Firebase loads
   const lbtn = document.querySelector('#lpanel-email .lbtn');
   if(lbtn){ lbtn.textContent='Loading…'; lbtn.disabled=true; }
+  setDot('warn');
 
   await load();
 
