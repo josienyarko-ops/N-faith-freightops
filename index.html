@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>N-FAITH LTD — FreightOps</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#f0f6fc;--surface:#fff;--s2:#e3eef9;--border:#b3d1ec;
@@ -362,6 +363,7 @@ tbody tr:hover{background:var(--bg);}
       <div class="sb-item" onclick="showTab('company-performance')" id="snt-company-performance"><span class="sb-ico">🏢</span>Company Performance</div>
       <div class="sb-item" onclick="showTab('documents')" id="snt-documents"><span class="sb-ico">🗂️</span>Documents</div>
       <div class="sb-item" onclick="showTab('history')" id="snt-history"><span class="sb-ico">🕐</span>History</div>
+      <div class="sb-item" onclick="showTab('exports')" id="snt-exports"><span class="sb-ico">📥</span>Exports</div>
       <div class="sb-item" onclick="showTab('users')" id="snt-users"><span class="sb-ico">👥</span>Users</div>
       <div class="sb-footer">
         <div class="sb-user">
@@ -775,6 +777,113 @@ tbody tr:hover{background:var(--bg);}
 <div class="section" id="sec-history">
   <div class="sechdr"><div class="sectitle">🕐 History / Audit Log</div></div>
   <div id="hist-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+</div>
+
+<!-- EXPORTS -->
+<div class="section" id="sec-exports">
+  <div class="sechdr"><div class="sectitle">📥 Exports & Reports</div></div>
+
+  <!-- Date range filter -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:18px;box-shadow:var(--sh);display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;">
+    <div class="fg" style="min-width:140px;">
+      <label>From Date</label>
+      <input id="exp-from" type="date">
+    </div>
+    <div class="fg" style="min-width:140px;">
+      <label>To Date</label>
+      <input id="exp-to" type="date">
+    </div>
+    <div class="fg" style="min-width:160px;">
+      <label>Driver Filter</label>
+      <select id="exp-driver"><option value="">All Drivers</option></select>
+    </div>
+    <button class="btn bp" onclick="applyExpFilters()">Apply Filter</button>
+    <button class="btn bg" onclick="clearExpFilters()">Clear</button>
+    <div id="exp-filter-info" style="font-size:12px;color:var(--muted);margin-left:4px;align-self:center;"></div>
+  </div>
+
+  <!-- Export cards grid -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:24px;">
+
+    <!-- All Trips -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);">
+      <div style="font-size:22px;margin-bottom:8px;">🚛</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">All Trips</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Full trip log — routes, drivers, revenue, dates, status</div>
+      <div id="exp-trips-count" style="font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+      <button class="btn bp" style="width:100%;" onclick="exportSheet('trips')">⬇ Download Excel</button>
+    </div>
+
+    <!-- Revenue Report -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);">
+      <div style="font-size:22px;margin-bottom:8px;">💵</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Revenue Report</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Revenue, costs, fuel, allowances and net margin per trip</div>
+      <div id="exp-rev-count" style="font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+      <button class="btn bp" style="width:100%;" onclick="exportSheet('revenue')">⬇ Download Excel</button>
+    </div>
+
+    <!-- Fuel Log -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);">
+      <div style="font-size:22px;margin-bottom:8px;">⛽</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Fuel & Maintenance</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">All fuel fills and maintenance entries with costs</div>
+      <div id="exp-fuel-count" style="font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+      <button class="btn bp" style="width:100%;" onclick="exportSheet('fuel')">⬇ Download Excel</button>
+    </div>
+
+    <!-- Drivers -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);">
+      <div style="font-size:22px;margin-bottom:8px;">👤</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Driver Report</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Driver list with performance — trips, delivery rate, revenue</div>
+      <div id="exp-drv-count" style="font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+      <button class="btn bp" style="width:100%;" onclick="exportSheet('drivers')">⬇ Download Excel</button>
+    </div>
+
+    <!-- Allowances -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);">
+      <div style="font-size:22px;margin-bottom:8px;">💰</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Allowances</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Trip, police and other allowances per driver per trip</div>
+      <div id="exp-allw-count" style="font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+      <button class="btn bp" style="width:100%;" onclick="exportSheet('allowances')">⬇ Download Excel</button>
+    </div>
+
+    <!-- Reverse Loads -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);">
+      <div style="font-size:22px;margin-bottom:8px;">🔄</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Reverse Loads</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Return cargo details, customer info and revenue</div>
+      <div id="exp-rl-count" style="font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+      <button class="btn bp" style="width:100%;" onclick="exportSheet('reverse')">⬇ Download Excel</button>
+    </div>
+
+    <!-- Full Workbook -->
+    <div style="background:var(--accent);border-radius:var(--r);padding:18px;box-shadow:var(--sh);grid-column:1/-1;">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div style="font-size:32px;">📊</div>
+        <div style="flex:1;">
+          <div style="font-family:var(--fh);font-size:17px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;margin-bottom:4px;">Full Operations Workbook</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.75);">Everything in one Excel file — Trips, Revenue, Fuel, Drivers, Allowances, Reverse Loads on separate sheets</div>
+        </div>
+        <button class="btn" style="background:#fff;color:var(--accent);font-weight:700;padding:10px 22px;white-space:nowrap;" onclick="exportSheet('all')">⬇ Download Full Workbook</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Single trip export -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);">
+    <div style="font-family:var(--fh);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">📋 Export Single Trip</div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <select id="exp-single-trip" style="background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:8px 12px;color:var(--text);font-family:var(--fb);font-size:13px;outline:none;min-width:240px;">
+        <option value="">— Select a trip —</option>
+      </select>
+      <button class="btn bp" onclick="exportSingleTrip()">⬇ Export Trip Details</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;">Includes trip info, cargo, fuel entries, allowances and reverse load for that waybill</div>
+  </div>
 </div>
 
 <!-- USERS -->
@@ -1512,6 +1621,7 @@ function showTab(tab){
   if(nav) nav.classList.add('active');
   if(tab==='users') renderUsers();
   if(tab==='messages') renderMessages();
+  if(tab==='exports'){ renderExports(); populateSels(); }
   if(tab==='fuel-calculator'){
     // Restore saved consumption rate from db
     const consEl=document.getElementById('fc-cons');
@@ -3223,6 +3333,293 @@ document.getElementById('l-pass').addEventListener('keydown',e=>{ if(e.key==='En
 document.getElementById('l-email').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('l-pass').focus(); });
 document.getElementById('l-pass-phone').addEventListener('keydown',e=>{ if(e.key==='Enter') doLoginPhone(); });
 document.getElementById('l-phone').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('l-pass-phone').focus(); });
+
+// ═══════════════════════════════════════════
+// EXPORTS — SheetJS Excel generation
+// ═══════════════════════════════════════════
+let _expFrom='', _expTo='', _expDriver='';
+
+function renderExports(){
+  // Populate driver dropdown
+  const dsel=document.getElementById('exp-driver');
+  if(dsel){
+    const cur=dsel.value;
+    dsel.innerHTML='<option value="">All Drivers</option>'+(db.drivers||[]).map(d=>`<option value="${d.name}">${d.name}</option>`).join('');
+    if(cur) dsel.value=cur;
+  }
+  // Populate single trip dropdown
+  const tsel=document.getElementById('exp-single-trip');
+  if(tsel){
+    const cur=tsel.value;
+    tsel.innerHTML='<option value="">— Select a trip —</option>'
+      +[...(db.trips||[])].reverse().map(t=>`<option value="${t.waybill}">${t.waybill} · ${t.driver} · ${t.dest} · ${t.orderDate||t.date||'—'}</option>`).join('');
+    if(cur) tsel.value=cur;
+  }
+  const fTrips=expFilteredTrips();
+  const fFuel=(db.fuel||[]).filter(f=>expDateOk(f.date)&&expDriverOk(f.driver));
+  const fAllw=(db.allowances||[]).filter(a=>expDateOk(a.date)&&expDriverOk(a.driver));
+  const fRL=fTrips.filter(t=>t.reverseLoad==='yes');
+  const setCount=(id,n,label)=>{ const e=document.getElementById(id); if(e) e.textContent=n+' '+label+(n!==1?'s':''); };
+  setCount('exp-trips-count',fTrips.length,'trip');
+  setCount('exp-rev-count',fTrips.filter(t=>t.revenue>0||t.rvRevenue>0).length,'trip');
+  setCount('exp-fuel-count',fFuel.length,'entry');
+  setCount('exp-drv-count',(db.drivers||[]).length,'driver');
+  setCount('exp-allw-count',fAllw.length,'entry');
+  setCount('exp-rl-count',fRL.length,'load');
+}
+
+function expDateOk(dateStr){
+  if(!_expFrom&&!_expTo) return true;
+  if(!dateStr) return false;
+  if(_expFrom&&dateStr<_expFrom) return false;
+  if(_expTo&&dateStr>_expTo) return false;
+  return true;
+}
+function expDriverOk(driverName){
+  if(!_expDriver) return true;
+  return (driverName||'')=== _expDriver;
+}
+function expFilteredTrips(){
+  return (db.trips||[]).filter(t=>{
+    const d=t.orderDate||t.departDate||t.date||'';
+    return expDateOk(d)&&expDriverOk(t.driver);
+  });
+}
+function applyExpFilters(){
+  _expFrom=document.getElementById('exp-from').value||'';
+  _expTo=document.getElementById('exp-to').value||'';
+  _expDriver=document.getElementById('exp-driver').value||'';
+  const parts=[];
+  if(_expFrom) parts.push('From '+_expFrom);
+  if(_expTo) parts.push('To '+_expTo);
+  if(_expDriver) parts.push('Driver: '+_expDriver);
+  const info=document.getElementById('exp-filter-info');
+  if(info) info.textContent=parts.length?'Filtered: '+parts.join(' · '):'';
+  renderExports();
+  toast('Filter applied','win');
+}
+function clearExpFilters(){
+  _expFrom=''; _expTo=''; _expDriver='';
+  document.getElementById('exp-from').value='';
+  document.getElementById('exp-to').value='';
+  document.getElementById('exp-driver').value='';
+  const info=document.getElementById('exp-filter-info');
+  if(info) info.textContent='';
+  renderExports();
+}
+
+function xlsxDate(){ return new Date().toISOString().slice(0,10); }
+
+function expStyleHeader(ws, row, cols){
+  for(let c=0;c<cols;c++){
+    const addr=XLSX.utils.encode_cell({r:row,c});
+    if(!ws[addr]) continue;
+    ws[addr].s={
+      font:{bold:true,color:{rgb:'FFFFFF'},name:'Arial',sz:10},
+      fill:{fgColor:{rgb:'1558A8'}},
+      alignment:{horizontal:'center',vertical:'center',wrapText:true},
+      border:{bottom:{style:'thin',color:{rgb:'CCCCCC'}}}
+    };
+  }
+}
+function expStyleRow(ws, row, cols, even){
+  for(let c=0;c<cols;c++){
+    const addr=XLSX.utils.encode_cell({r:row,c});
+    if(!ws[addr]) continue;
+    ws[addr].s={
+      font:{name:'Arial',sz:10},
+      fill:{fgColor:{rgb:even?'EBF3FB':'FFFFFF'}},
+      alignment:{vertical:'center',wrapText:false},
+      border:{bottom:{style:'thin',color:{rgb:'E8E8E8'}}}
+    };
+  }
+}
+function expBuildSheet(headers, rows, colWidths){
+  const data=[headers,...rows];
+  const ws=XLSX.utils.aoa_to_sheet(data);
+  // Style header row
+  expStyleHeader(ws, 0, headers.length);
+  // Style data rows
+  for(let r=1;r<data.length;r++) expStyleRow(ws, r, headers.length, r%2===0);
+  // Column widths
+  ws['!cols']=(colWidths||headers.map(()=>({wch:18}))).map(w=>typeof w==='number'?{wch:w}:w);
+  // Freeze header row
+  ws['!freeze']={xSplit:0,ySplit:1};
+  return ws;
+}
+
+function exportSheet(type){
+  if(typeof XLSX==='undefined'){ toast('Excel library not loaded yet — try again in a moment','err'); return; }
+  const wb=XLSX.utils.book_new();
+  const dt=xlsxDate();
+  const trips=expFilteredTrips();
+  const fuel=(db.fuel||[]).filter(f=>expDateOk(f.date)&&expDriverOk(f.driver));
+  const allw=(db.allowances||[]).filter(a=>expDateOk(a.date)&&expDriverOk(a.driver));
+
+  if(type==='trips'||type==='all'){
+    const hdr=['N-Faith WB','Company WB','Driver','Truck','Pickup Company','Origin','Destination','Cargo','Client','Client Contact','Qty','Unit Price (GH₵)','Revenue (GH₵)','Weight (kg)','Distance (km)','Status','Priority','Order Date','Departure Date','Arrival Date','Delivery Date','Manager','Notes','Entered By'];
+    const rows=trips.map(t=>[t.waybill,t.companyWaybill||'',t.driver,t.truck,t.pickupCompany||'',t.origin||'',t.dest,t.cargo,t.client||'',t.clientContact||'',t.qty||0,t.unitPrice||0,t.revenue||0,t.weight||0,t.dist||0,t.status,t.priority||'Normal',t.orderDate||t.date||'',t.departDate||'',t.arriveDate||'',t.deliverDate||'',t.manager||'',t.notes||'',t.enteredByName||'']);
+    const ws=expBuildSheet(hdr,rows,[14,14,14,10,18,14,14,20,16,14,8,12,12,10,10,10,10,12,12,12,12,14,22,14]);
+    XLSX.utils.book_append_sheet(wb,ws,'Trips');
+  }
+  if(type==='revenue'||type==='all'){
+    const hdr=['N-Faith WB','Company WB','Order Date','Driver','Client','Cargo','Qty','Unit Price','Outbound Revenue','Reverse Revenue','Total Revenue','Fuel Cost','Allowances','Net Margin','Status'];
+    const rows=trips.map(t=>{
+      const tFuel=(db.fuel||[]).filter(f=>f.linkedWaybill===t.waybill&&f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
+      const tAllw=(db.allowances||[]).filter(a=>a.waybill===t.waybill).reduce((s,a)=>s+Number(a.total||0),0);
+      const totalRev=Number(t.revenue||0)+Number(t.rvRevenue||0);
+      return[t.waybill,t.companyWaybill||'',t.orderDate||t.date||'',t.driver,t.client||'',t.cargo,t.qty||0,t.unitPrice||0,t.revenue||0,t.rvRevenue||0,totalRev,tFuel,tAllw,totalRev-tFuel-tAllw,t.status];
+    });
+    const ws=expBuildSheet(hdr,rows,[14,14,12,14,16,20,8,12,14,14,14,12,12,12,10]);
+    XLSX.utils.book_append_sheet(wb,ws,'Revenue');
+  }
+  if(type==='fuel'||type==='all'){
+    const hdr=['ID','Type','Truck','Driver','Station','Litres / Qty','Price per Litre','Total Cost (GH₵)','Date','Linked WB','Notes','Entered By'];
+    const rows=fuel.map(f=>[f.id,f.type,f.truck,f.driver||'',f.station||'',f.amount||0,f.pricePerLitre||0,f.cost||0,f.date||'',f.linkedWaybill||'',f.notes||'',f.enteredBy||'']);
+    const ws=expBuildSheet(hdr,rows,[10,14,10,14,16,10,12,14,12,12,22,14]);
+    XLSX.utils.book_append_sheet(wb,ws,'Fuel & Maintenance');
+  }
+  if(type==='drivers'||type==='all'){
+    const hdr=['Name','Truck','Plate','Phone','License No.','License Expiry','License Class','Status','Total Trips','Delivered','Delayed','Delivery Rate %','Total Revenue (GH₵)','Guarantor Name','Guarantor Phone'];
+    const rows=(db.drivers||[]).map(d=>{
+      const dTrips=(db.trips||[]).filter(t=>t.driver===d.name);
+      const delivered=dTrips.filter(t=>t.status==='Delivered').length;
+      const delayed=dTrips.filter(t=>t.status==='Delayed').length;
+      const rev=dTrips.reduce((s,t)=>s+Number(t.revenue||0)+Number(t.rvRevenue||0),0);
+      const rate=dTrips.length?Math.round(delivered/dTrips.length*100):0;
+      return[d.name,d.truck,d.plate||'',d.phone||'',d.license||'',d.licenseExpiry||'',d.licenseClass||'',d.status||'',dTrips.length,delivered,delayed,rate,rev,d.grantorName||'',d.grantorPhone||''];
+    });
+    const ws=expBuildSheet(hdr,rows,[16,10,12,14,14,12,12,10,10,10,10,12,16,16,14]);
+    XLSX.utils.book_append_sheet(wb,ws,'Drivers');
+  }
+  if(type==='allowances'||type==='all'){
+    const hdr=['ID','Date','Driver','Truck','N-Faith WB','Trip Allowance (GH₵)','Police Checkpoint (GH₵)','Other (GH₵)','Total (GH₵)','Paid By','Notes'];
+    const rows=allw.map(a=>[a.id,a.date||'',a.driver,a.truck||'',a.waybill||'',a.tripAllowance||0,a.policeCheckpoint||0,a.other||0,a.total||0,a.paidBy||'',a.notes||'']);
+    const ws=expBuildSheet(hdr,rows,[10,12,14,10,12,16,16,12,12,14,22]);
+    XLSX.utils.book_append_sheet(wb,ws,'Allowances');
+  }
+  if(type==='reverse'||type==='all'){
+    const rl=trips.filter(t=>t.reverseLoad==='yes');
+    const hdr=['N-Faith WB','Driver','Outbound Route','Return Pickup','Return Destination','Return Cargo','Customer Name','Customer Contact','Return Qty','Return Unit Price','Return Revenue (GH₵)','Return Status'];
+    const rows=rl.map(t=>[''+t.waybill,t.driver,(t.origin||'')+'→'+t.dest,t.rvPickup||'',t.rvDest||'',t.rvCargo||'',t.rvClient||'',t.rvContact||'',t.rvQty||0,t.rvUnitPrice||0,t.rvRevenue||0,t.rvStatus||'Pending']);
+    const ws=expBuildSheet(hdr,rows,[14,14,18,16,16,18,16,14,10,14,16,12]);
+    XLSX.utils.book_append_sheet(wb,ws,'Reverse Loads');
+  }
+
+  // Summary sheet for full workbook
+  if(type==='all'){
+    const totalRev=(db.trips||[]).reduce((s,t)=>s+Number(t.revenue||0)+Number(t.rvRevenue||0),0);
+    const totalFuel=(db.fuel||[]).filter(f=>f.type==='Fuel Refill').reduce((s,f)=>s+Number(f.cost||0),0);
+    const totalAllw=(db.allowances||[]).reduce((s,a)=>s+Number(a.total||0),0);
+    const summaryData=[
+      ['N-FAITH LTD — FreightOps Operations Report',''],
+      ['Generated',''+dt],
+      ['',''],
+      ['SUMMARY',''],
+      ['Total Trips',''+( db.trips||[]).length],
+      ['Delivered',''+( db.trips||[]).filter(t=>t.status==='Delivered').length],
+      ['Delayed',''+( db.trips||[]).filter(t=>t.status==='Delayed').length],
+      ['Active Drivers',''+( db.drivers||[]).length],
+      ['',''],
+      ['FINANCIALS',''],
+      ['Total Revenue (GH₵)',''+totalRev.toFixed(2)],
+      ['Total Fuel Cost (GH₵)',''+totalFuel.toFixed(2)],
+      ['Total Allowances (GH₵)',''+totalAllw.toFixed(2)],
+      ['Net Margin (GH₵)',''+(totalRev-totalFuel-totalAllw).toFixed(2)],
+    ];
+    const wsSummary=XLSX.utils.aoa_to_sheet(summaryData);
+    wsSummary['!cols']=[{wch:28},{wch:20}];
+    XLSX.utils.book_append_sheet(wb,wsSummary,'Summary');
+    // Move summary to first position
+    wb.SheetNames=wb.SheetNames.filter(s=>s!=='Summary');
+    wb.SheetNames=['Summary',...wb.SheetNames];
+  }
+
+  const fname='nfaith-'+type+'-'+dt+'.xlsx';
+  XLSX.writeFile(wb,fname);
+  toast('✅ '+fname+' downloaded!','win');
+}
+
+function exportSingleTrip(){
+  if(typeof XLSX==='undefined'){ toast('Excel library not loaded yet','err'); return; }
+  const wb=document.getElementById('exp-single-trip').value;
+  if(!wb){ toast('Select a trip first','err'); return; }
+  const t=(db.trips||[]).find(x=>x.waybill===wb);
+  if(!t){ toast('Trip not found','err'); return; }
+
+  const xlwb=XLSX.utils.book_new();
+
+  // Trip info sheet
+  const tripInfo=[
+    ['N-Faith WB',t.waybill],
+    ['Company WB',t.companyWaybill||'—'],
+    ['Driver',t.driver],
+    ['Truck',t.truck],
+    ['Pickup Company',t.pickupCompany||'—'],
+    ['Origin',t.origin||'—'],
+    ['Destination',t.dest],
+    ['Cargo',t.cargo],
+    ['Client',t.client||'—'],
+    ['Client Contact',t.clientContact||'—'],
+    ['Quantity',t.qty||0],
+    ['Unit Price (GH₵)',t.unitPrice||0],
+    ['Outbound Revenue (GH₵)',t.revenue||0],
+    ['Reverse Revenue (GH₵)',t.rvRevenue||0],
+    ['Total Revenue (GH₵)',Number(t.revenue||0)+Number(t.rvRevenue||0)],
+    ['Weight (kg)',t.weight||0],
+    ['Distance (km)',t.dist||0],
+    ['Status',t.status],
+    ['Priority',t.priority||'Normal'],
+    ['Order Date',t.orderDate||t.date||'—'],
+    ['Departure Date',t.departDate||'—'],
+    ['Arrival Date',t.arriveDate||'—'],
+    ['Delivery Date',t.deliverDate||'—'],
+    ['Manager',t.manager||'—'],
+    ['Notes',t.notes||'—'],
+    ['Entered By',t.enteredByName||'—'],
+  ];
+  const wsTripInfo=XLSX.utils.aoa_to_sheet(tripInfo);
+  wsTripInfo['!cols']=[{wch:22},{wch:30}];
+  XLSX.utils.book_append_sheet(xlwb,wsTripInfo,'Trip Info');
+
+  // Fuel for this trip
+  const tripFuel=(db.fuel||[]).filter(f=>f.linkedWaybill===t.waybill);
+  const fuelHdr=['ID','Type','Truck','Station','Litres','Price/L','Cost (GH₵)','Date','Notes'];
+  const fuelRows=tripFuel.map(f=>[f.id,f.type,f.truck,f.station||'',f.amount||0,f.pricePerLitre||0,f.cost||0,f.date||'',f.notes||'']);
+  const wsFuel=expBuildSheet(fuelHdr,fuelRows,[10,14,10,16,10,10,12,12,22]);
+  XLSX.utils.book_append_sheet(xlwb,wsFuel,'Fuel');
+
+  // Allowances for this trip
+  const tripAllw=(db.allowances||[]).filter(a=>a.waybill===t.waybill);
+  const allwHdr=['Date','Driver','Trip Allow. (GH₵)','Police (GH₵)','Other (GH₵)','Total (GH₵)','Paid By'];
+  const allwRows=tripAllw.map(a=>[a.date||'',a.driver,a.tripAllowance||0,a.policeCheckpoint||0,a.other||0,a.total||0,a.paidBy||'']);
+  const wsAllw=expBuildSheet(allwHdr,allwRows,[12,14,14,12,12,12,14]);
+  XLSX.utils.book_append_sheet(xlwb,wsAllw,'Allowances');
+
+  // Reverse load if present
+  if(t.reverseLoad==='yes'){
+    const rlData=[
+      ['Return Pickup',t.rvPickup||'—'],
+      ['Return Destination',t.rvDest||'—'],
+      ['Return Cargo',t.rvCargo||'—'],
+      ['Customer Name',t.rvClient||'—'],
+      ['Customer Contact',t.rvContact||'—'],
+      ['Return Qty',t.rvQty||0],
+      ['Return Unit Price (GH₵)',t.rvUnitPrice||0],
+      ['Return Revenue (GH₵)',t.rvRevenue||0],
+      ['Return Status',t.rvStatus||'Pending'],
+    ];
+    const wsRL=XLSX.utils.aoa_to_sheet(rlData);
+    wsRL['!cols']=[{wch:22},{wch:30}];
+    XLSX.utils.book_append_sheet(xlwb,wsRL,'Reverse Load');
+  }
+
+  const fname='nfaith-trip-'+t.waybill+'-'+xlsxDate()+'.xlsx';
+  XLSX.writeFile(xlwb,fname);
+  toast('✅ '+fname+' downloaded!','win');
+}
+
+// Render exports counts when tab is opened
 
 // Set the first filter button active
 setMsgFilter('all');
