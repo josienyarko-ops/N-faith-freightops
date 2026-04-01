@@ -1669,6 +1669,10 @@ function openModal(type){
     ['f-qty','f-ppl','f-cost'].forEach(id=>{ const e=document.getElementById(id);if(e)e.value=''; });
     document.getElementById('f-date').value=today;
     document.getElementById('f-type').value='Fuel Refill';
+    // Reset truck and driver so auto-fill works cleanly
+    const fTk=document.getElementById('f-truck'); if(fTk) fTk.value='';
+    const fDr=document.getElementById('f-driver'); if(fDr) fDr.value='';
+    const fWb=document.getElementById('f-wb'); if(fWb) fWb.value='';
   }
   if(type==='cargo'){
     document.getElementById('c-eid').value='';
@@ -1788,10 +1792,11 @@ function populateSels(){
   const tOpts=drivers.map(d=>`<option value="${d.truck}">${d.truck} — ${d.name}</option>`).join('');
   const wbOpts=trips.map(t=>`<option value="${t.waybill}">${t.waybill} · ${t.driver} · ${t.dest}</option>`).join('');
   const dFull=drivers.map(d=>`<option value="${d.name}">${d.name}</option>`).join('');
-  const drivSels=['t-driver','aw-driver','saf-driver'];
+  // f-driver now included — was missing and caused empty dropdown in fuel modal
+  const drivSels=['t-driver','f-driver','aw-driver','saf-driver'];
   const truckSels=['t-truck','f-truck','aw-truck','saf-truck'];
-  drivSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML=dOpts||'<option>No drivers yet</option>'; });
-  truckSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML=tOpts||'<option>No trucks yet</option>'; });
+  drivSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML='<option value="">— Select driver —</option>'+(dOpts||'<option>No drivers yet</option>'); });
+  truckSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML='<option value="">— Select truck —</option>'+(tOpts||'<option>No trucks yet</option>'); });
   const wbSels=['f-wb','aw-wb','dp-wb'];
   wbSels.forEach(id=>{ const e=document.getElementById(id);if(e)e.innerHTML='<option value="">— None —</option>'+wbOpts; });
   const cTrip=document.getElementById('c-trip');
@@ -1802,6 +1807,27 @@ function populateSels(){
   if(uDrv) uDrv.innerHTML='<option value="">— None —</option>'+dFull;
   const fcTrip=document.getElementById('fc-trip');
   if(fcTrip){ const prev=fcTrip.value; fcTrip.innerHTML='<option value="">— Select trip —</option>'+wbOpts; if(prev) fcTrip.value=prev; }
+
+  // Auto-fill driver when truck is selected in fuel modal
+  const fTruck=document.getElementById('f-truck');
+  const fDriver=document.getElementById('f-driver');
+  if(fTruck&&fDriver&&!fTruck._wired){
+    fTruck._wired=true;
+    fTruck.addEventListener('change',()=>{
+      const truckVal=fTruck.value;
+      const matched=(db.drivers||[]).find(d=>d.truck===truckVal);
+      if(matched&&!fDriver.value) fDriver.value=matched.name;
+    });
+  }
+  // Also wire driver→truck auto-fill
+  if(fDriver&&fTruck&&!fDriver._wired){
+    fDriver._wired=true;
+    fDriver.addEventListener('change',()=>{
+      const driverVal=fDriver.value;
+      const matched=(db.drivers||[]).find(d=>d.name===driverVal);
+      if(matched&&!fTruck.value) fTruck.value=matched.truck;
+    });
+  }
 }
 
 // ═══════════════════════════════════════════
