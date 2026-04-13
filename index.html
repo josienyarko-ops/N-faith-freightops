@@ -1351,20 +1351,31 @@ async function load(){
     if(d){ db={...db,...JSON.parse(d)}; _lastHash=d; }
   }catch(e){}
 
-  // 2. Always pull latest from Firebase first — users live there
+  // 2. Pull from Firebase — but NEVER discard good local data on failure
   try{
     const [fbDb, fbUsers] = await Promise.all([fbGet('db'), fbGet('users')]);
-    if(fbUsers){
+    if(fbUsers && Object.keys(fbUsers).length > 0){
+      // Merge: keep local admin account if Firebase doesn't have it
+      const ak='admin_at_nfaith_com';
+      const localAdmin = users[ak];
       users = fbUsers;
+      if(!users[ak] && localAdmin) users[ak] = localAdmin;
       try{ localStorage.setItem('nf-users',JSON.stringify(users)); }catch(e){}
     }
-    if(fbDb){
+    if(fbDb && Object.keys(fbDb).length > 0){
+      // Only merge Firebase data if it has actual content
       const h=JSON.stringify(fbDb);
-      db={...db,...fbDb}; _lastHash=h;
-      try{ localStorage.setItem('nf-db',h); }catch(e){}
+      if(h !== '{}'){
+        db={...db,...fbDb}; _lastHash=h;
+        try{ localStorage.setItem('nf-db',h); }catch(e){}
+      }
     }
     setDot('ok');
-  }catch(e){ setDot('err'); }
+  }catch(e){
+    // Firebase unreachable — use whatever we loaded from localStorage above
+    // Local data is already in `db` and `users` from Step 1
+    setDot('local');
+  }
 
   // 3. Only create admin if genuinely absent from BOTH localStorage and Firebase
   ensureAdmin();
@@ -1470,10 +1481,15 @@ async function doLogin(){
   err.style.display='none';
   if(!email||!pass){err.textContent='Please enter email and password.';err.style.display='block';return;}
   if(btn){btn.textContent='Checking…';btn.disabled=true;}
-  try{
+try{
     const fresh=await fbGet('users');
-    if(fresh){ const ak='admin_at_nfaith_com'; const bk=users[ak]; users=fresh; if(!users[ak]) users[ak]=bk; try{localStorage.setItem('nf-users',JSON.stringify(users));}catch(e){} }
-  }catch(e){}
+    if(fresh && Object.keys(fresh).length > 0){
+      const ak='admin_at_nfaith_com'; const bk=users[ak];
+      users=fresh; if(!users[ak]) users[ak]=bk;
+      try{localStorage.setItem('nf-users',JSON.stringify(users));}catch(e){}
+    }
+    // If Firebase unreachable, silently use cached users from localStorage
+  }catch(e){ /* offline — proceed with cached users */ }
   if(btn){btn.textContent='Sign In →';btn.disabled=false;}
   const u=users[eKey(email)];
   if(!u){err.textContent='No account found for: '+email+'. Ask your admin to check the account.';err.style.display='block';return;}
